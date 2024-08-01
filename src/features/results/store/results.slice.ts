@@ -10,6 +10,8 @@ interface IInitialState {
 	test?: string
 	language?: string
 	area?: string
+	totalPages: number
+	resultsPage: 1
 }
 
 const initialState: IInitialState = {
@@ -19,6 +21,8 @@ const initialState: IInitialState = {
 	isPassed: '',
 	test: '',
 	area: '',
+	totalPages: 1,
+	resultsPage: 1,
 }
 
 export const resultSlice = createSlice({
@@ -41,6 +45,9 @@ export const resultSlice = createSlice({
 			state.isPassed = payload.isPassed === 'all' ? '' : payload.isPassed
 			state.test = payload.test === 'all' ? '' : payload.test
 		},
+		setResultsPage: (state, action) => {
+			state.resultsPage = action.payload
+		},
 	},
 	extraReducers: builder => {
 		builder
@@ -52,6 +59,7 @@ export const resultSlice = createSlice({
 				(state, action: PayloadAction<IGetResponseData<IResult>>) => {
 					state.isLoadingResults = false
 					state.results = action.payload.data
+					state.totalPages = action.payload.totalPages
 				}
 			)
 			.addCase(getAllResults.rejected, state => {
@@ -61,4 +69,4 @@ export const resultSlice = createSlice({
 	},
 })
 
-export const { setResultFilter } = resultSlice.actions
+export const { setResultFilter, setResultsPage } = resultSlice.actions

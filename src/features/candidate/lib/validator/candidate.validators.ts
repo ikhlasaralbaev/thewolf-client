@@ -7,6 +7,6 @@ export const candidateCreateValidator = yup.object({
 	area: yup.string().required(),
 	district: yup.string().required(),
 	lastJob: yup.string().required(),
-	experience: yup.number().required(),
+	experience: yup.string().required(),
 	direction: yup.string().required(),
 })

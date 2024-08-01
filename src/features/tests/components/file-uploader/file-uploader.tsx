@@ -3,6 +3,7 @@ import { UploadSvg } from '@/assets'
 import { Input } from '@/components/ui/input'
 import { X } from 'lucide-react'
 import { FC, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
 	onRightButtonHandler?: () => void
@@ -27,6 +28,7 @@ const FileUploader: FC<Props> = ({
 	const [fileUploaderIsOpen, setFileUploaderIsOpen] = useState(false)
 	const [fileValues, setFileValues] = useState<FileList | null>(null)
 	const [strFiles, setStrFiles] = useState<string[]>(files || [])
+	const { t } = useTranslation()
 
 	useEffect(() => {
 		if (fileValues?.length) {
@@ -89,11 +91,11 @@ const FileUploader: FC<Props> = ({
 							accept='image/*'
 						/>
 						<div className='flex flex-col items-center justify-center w-full gap-1 my-2 border border-gray-200 rounded-lg cursor-pointer h-[100px]'>
-							<h2 className='text-sm text-primary'>
-								Нажмите, чтобы прикрепить файл
-							</h2>
+							<h2 className='text-sm text-primary'>{t('select_files')}</h2>
 							<img src={UploadSvg} />
-							<span className='text-sm text-gray-500'>Формат: PNG, jpeg</span>
+							<span className='text-sm text-gray-500'>
+								{t('format')}: PNG, jpeg
+							</span>
 						</div>
 					</label>
 
@@ -124,7 +126,7 @@ const FileUploader: FC<Props> = ({
 						}}
 						className='text-sm text-blue-500 underline cursor-pointer'
 					>
-						закрыть
+						{t('close')}
 					</span>
 				</>
 			) : (
@@ -133,7 +135,7 @@ const FileUploader: FC<Props> = ({
 						onClick={() => setFileUploaderIsOpen(true)}
 						className='text-sm text-blue-500 underline cursor-pointer'
 					>
-						+ Добавить видео/изображение
+						{t('add_file')}
 					</span>
 				</div>
 			)}

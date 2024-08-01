@@ -1,3 +1,4 @@
+import ResultDetails from '@/features/results/result-details/result-details'
 import Home from '@/pages/admin/home/home'
 import StepTests from '@/pages/admin/step-tests/step-tests'
 import ResultsPage from '@/pages/results/results'
@@ -20,6 +21,10 @@ export const adminRoutes = ({ user }: { user: any }) => {
 		{
 			path: '/admin/step-tests/:id',
 			element: user ? <StepTests /> : <Navigate to={'/login'} replace />,
+		},
+		{
+			path: '/admin/result/:id',
+			element: user ? <ResultDetails /> : <Navigate to={'/login'} replace />,
 		},
 	]
 }

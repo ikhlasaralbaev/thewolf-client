@@ -83,4 +83,10 @@ export const regions = [
 		ru: 'Хорезм',
 		en: 'Khorezm',
 	},
+	{
+		code: 'OTHERS',
+		uz: 'Boshqa',
+		ru: 'Другой',
+		en: 'Other',
+	},
 ]

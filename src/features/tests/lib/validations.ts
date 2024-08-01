@@ -24,6 +24,19 @@ export const createQuestionValidator = yup.object({
 				isCorrect: yup.boolean(),
 			})
 		)
+		.min(2),
+})
+
+export const addAnswerValidator = yup.object({
+	answers: yup
+		.array(
+			yup.object({
+				title: yup.string().required(),
+				video_url: yup.string().optional(),
+				file_paths: yup.array(yup.string()).optional(),
+				isCorrect: yup.boolean().optional(),
+			})
+		)
 		.min(1),
 })
 

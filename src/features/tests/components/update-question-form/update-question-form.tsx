@@ -1,7 +1,4 @@
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
 	Select,
 	SelectContent,
@@ -13,15 +10,12 @@ import { Textarea } from '@/components/ui/textarea'
 import { useAppDispatch, useAppSelector } from '@/hooks/store-hooks'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from 'react'
-import { Controller, useFieldArray, useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import { updateQuestionValidator } from '../../lib/validations'
-import {
-	getStepDetails,
-	updateAnswerAction,
-	updateQuestionAction,
-} from '../../store/tests.actions'
+import { getStepDetails, updateQuestionAction } from '../../store/tests.actions'
 import { IQuestion } from '../../types'
 import FileUploader from '../file-uploader/file-uploader'
 
@@ -35,7 +29,7 @@ const UpdateQuestionForm = ({
 	const { isCreatingTest } = useAppSelector(state => state.tests)
 	const params = useParams()
 	const [isMultipleAnswers, setIsMultipleAnswers] = useState(true)
-
+	const { t } = useTranslation()
 	console.log(question)
 
 	const {
@@ -47,23 +41,8 @@ const UpdateQuestionForm = ({
 	} = useForm({
 		resolver: yupResolver(updateQuestionValidator),
 		defaultValues: {
-			answers: [
-				{
-					title: '',
-					isCorrect: false,
-				},
-				{
-					title: '',
-					isCorrect: false,
-				},
-			],
 			isMultipleAnswers: true,
 		},
-	})
-
-	const { fields, append, remove } = useFieldArray({
-		control,
-		name: 'answers',
 	})
 
 	const dispatch = useAppDispatch()
@@ -85,7 +64,6 @@ const UpdateQuestionForm = ({
 	}, [question])
 
 	const onSubmit = (data: any) => {
-		console.log(data)
 		dispatch(
 			updateQuestionAction({
 				id: question.id,
@@ -97,35 +75,14 @@ const UpdateQuestionForm = ({
 			})
 		).then((res: any) => {
 			if (res.type === 'tests/update-question/fulfilled') {
-				const promises = data.answers.map((answer: any) => {
-					return dispatch(
-						updateAnswerAction({
-							data: {
-								title: answer?.title,
-								file_paths: answer.file_paths,
-								isCorrect: answer.isCorrect,
-							},
-							id: answer.id,
-						})
-					)
-				})
-
-				Promise.all(promises).then(() => {
-					toast.success('Step updated successfully!')
-					onComplete()
-					dispatch(getStepDetails({ step_id: params.id! }))
-				})
+				toast.success(t('test_updated'))
+				onComplete()
+				dispatch(getStepDetails({ step_id: params.id! }))
 			} else {
 				toast.error('Error with create step!')
 			}
 		})
 	}
-
-	useEffect(() => {
-		fields.map((_, index) => {
-			setValue(`answers.${index}.isCorrect`, false)
-		})
-	}, [isMultipleAnswers])
 
 	return (
 		<form className='grid' onSubmit={handleSubmit(onSubmit)}>
@@ -143,11 +100,11 @@ const UpdateQuestionForm = ({
 							}}
 						>
 							<SelectTrigger className='w-full'>
-								<SelectValue placeholder='Несколько ответов' />
+								<SelectValue placeholder={t('multi_answers')} />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value={'true'}>Несколько ответов</SelectItem>
-								<SelectItem value={'false'}>One answer</SelectItem>
+								<SelectItem value={'true'}>{t('multi_answers')}</SelectItem>
+								<SelectItem value={'false'}>{t('single_answer')}</SelectItem>
 							</SelectContent>
 						</Select>
 					)}
@@ -159,7 +116,7 @@ const UpdateQuestionForm = ({
 				)}
 			</div>
 			<div className='mb-[20px] grid'>
-				<label className='mb-2'>Введите текст вопроса.</label>
+				<label className='mb-2'>{t('question_title')}</label>
 				<Controller
 					name='title'
 					control={control}
@@ -192,164 +149,8 @@ const UpdateQuestionForm = ({
 
 			<div className='w-full mt-2 mb-6 border-b border-b-gray-300' />
 
-			<div className=''>
-				<RadioGroup
-					defaultValue={`answers.${0}.isCorrect`}
-					onValueChange={e => {
-						fields.map((_, index) => {
-							setValue(`answers.${index}.isCorrect`, false)
-						})
-
-						setValue(`answers.${Number(e.split('.')[1])}.isCorrect`, true)
-
-						console.log(e)
-					}}
-				>
-					{fields.map((item, index) =>
-						isMultipleAnswers ? (
-							<div key={item.id} className='mb-[10px] grid'>
-								<label className='flex items-center justify-between w-full mb-2'>
-									<span>Напишите вариант ответа</span>{' '}
-									<span
-										onClick={() => remove(index)}
-										className='text-sm text-red-500 underline cursor-pointer'
-									>
-										Delete
-									</span>
-								</label>
-								<Controller
-									name={`answers.${index}.title`}
-									control={control}
-									render={({ field }) => (
-										<div>
-											<div className='flex items-center gap-2'>
-												<Input {...field} />
-												<Controller
-													name={`answers.${index}.isCorrect`}
-													control={control}
-													render={({ field }) => {
-														return (
-															<div>
-																<Checkbox
-																	onCheckedChange={e => {
-																		field.onChange(e)
-																		console.log(e)
-																	}}
-																	defaultChecked={field.value}
-																/>
-															</div>
-														)
-													}}
-												/>
-											</div>
-
-											<Controller
-												name={`answers.${index}.file_paths`}
-												control={control}
-												render={({ field }) => {
-													return (
-														<div>
-															<FileUploader
-																setFiles={files => field.onChange(files)}
-																onRightButtonHandler={() => remove(index)}
-															/>
-														</div>
-													)
-												}}
-											/>
-										</div>
-									)}
-								/>
-								{errors.answers && (
-									<p className='mt-1 text-sm text-red-500'>
-										{errors.answers.message}
-									</p>
-								)}
-							</div>
-						) : (
-							<div key={item.id} className='mb-[10px] grid'>
-								<label className='flex items-center justify-between w-full mb-2'>
-									<span>Напишите вариант ответа</span>{' '}
-									<span
-										onClick={() => remove(index)}
-										className='text-sm text-red-500 underline cursor-pointer'
-									>
-										Delete
-									</span>
-								</label>
-								<Controller
-									name={`answers.${index}.title`}
-									control={control}
-									render={({ field }) => (
-										<div>
-											<div className='flex items-center gap-2'>
-												<Input {...field} />
-
-												<Controller
-													name={`answers.${index}.isCorrect`}
-													control={control}
-													render={({ field }) => {
-														return (
-															<div>
-																<RadioGroupItem
-																	value={`answers.${index}.isCorrect`}
-																	defaultChecked={field.value}
-																	checked={field.value}
-																/>
-															</div>
-														)
-													}}
-												/>
-											</div>
-
-											<Controller
-												name={`answers.${index}.file_paths`}
-												control={control}
-												render={({ field }) => {
-													return (
-														<div>
-															<FileUploader
-																setFiles={files => field.onChange(files)}
-																onRightButtonHandler={() => remove(index)}
-															/>
-														</div>
-													)
-												}}
-											/>
-										</div>
-									)}
-								/>
-								{errors.answers && (
-									<p className='mt-1 text-sm text-red-500'>
-										{errors.answers.message}
-									</p>
-								)}
-							</div>
-						)
-					)}
-				</RadioGroup>
-				<span
-					onClick={() => {
-						append({
-							title: '',
-							isCorrect: false,
-							video_url: '',
-							file_paths: [],
-						})
-					}}
-					className='mb-4 text-blue-500 underline cursor-pointer text-md'
-				>
-					+ Новый вариант ответа
-				</span>
-				{errors.answers && (
-					<p className='mt-1 text-sm text-red-500'>{errors.answers.message}</p>
-				)}
-			</div>
-
-			<div className='w-full mt-4 mb-6 border-b border-b-gray-300' />
-
 			<Button className='mx-auto' type='submit' isLoading={isCreatingTest}>
-				Добавить
+				{t('save')}
 			</Button>
 		</form>
 	)

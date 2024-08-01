@@ -10,13 +10,14 @@ export const getAllResults = createAsyncThunk<
 		area?: string
 		test?: string | number
 		isPassed?: string
+		page?: string | number
 	}
->('results/get', async ({ language, area, test, isPassed }, thunkAPI) => {
+>('results/get', async ({ language, area, test, isPassed, page }, thunkAPI) => {
 	try {
 		const res = await axiosInstance.get(
 			`/result?language=${language || ''}&area=${area || ''}&test=${
 				test || ''
-			}&isPassed=${isPassed || ''}`
+			}&isPassed=${isPassed || ''}&page=${page || 1}`
 		)
 
 		return res.data

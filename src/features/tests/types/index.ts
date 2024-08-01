@@ -50,6 +50,7 @@ export interface IQuestion {
 	video_url: null
 	isMultipleAnswers: boolean
 	answers: IAnswer[]
+	correctAnswers: number
 }
 
 export interface IAnswer {
@@ -58,6 +59,7 @@ export interface IAnswer {
 	isCorrect: boolean
 	file_paths: any[]
 	video_url: string
+	question: number | string
 }
 
 export interface IStepDetails {

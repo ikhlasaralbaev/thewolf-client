@@ -6,6 +6,7 @@ export interface IResult {
 	isPassed: boolean
 	candidate: Candidate
 	test: Test
+	createdAt: string
 }
 
 export interface Candidate {

@@ -1,20 +1,15 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
-'use client'
-
 import { LogoSvg } from '@/assets'
+import { Button } from '@/components/ui/button'
+import {
+	Dialog as Alert,
+	DialogContent,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from '@/components/ui/dialog'
+import { logout } from '@/features/auth/store/auth.slice'
+import { useAppDispatch } from '@/hooks/store-hooks'
 import {
 	Dialog,
 	DialogBackdrop,
@@ -25,30 +20,26 @@ import {
 	MenuItems,
 	TransitionChild,
 } from '@headlessui/react'
-import {
-	Bars3Icon,
-	Cog6ToothIcon,
-	UsersIcon,
-	XMarkIcon,
-} from '@heroicons/react/24/outline'
+import { Bars3Icon, UsersIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { GridIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons'
+import { LogOut } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 
 const navigation = [
-	{ name: 'Tests', href: '/admin', icon: GridIcon, current: true },
+	{ name: 'tests', href: '/admin', icon: GridIcon, current: true },
 	{
-		name: 'Candidates',
+		name: 'results',
 		href: '/admin/candidates',
 		icon: UsersIcon,
 		current: false,
 	},
 ]
 const userNavigation = [
-	{ icon: 'uz', name: 'Uzbek', href: '#' },
-	{ icon: 'ru', name: 'Russian', href: '#' },
-	{ icon: 'us', name: 'English', href: '#' },
+	{ icon: 'uz', lang: 'uz', name: 'Uzbek', href: '#' },
+	{ icon: 'ru', lang: 'ru', name: 'Russian', href: '#' },
+	{ icon: 'us', lang: 'en', name: 'English', href: '#' },
 ]
 
 function classNames(...classes: any[]) {
@@ -57,21 +48,12 @@ function classNames(...classes: any[]) {
 
 export default function AdminLayout() {
 	const [sidebarOpen, setSidebarOpen] = useState(false)
-	const { t, i18n } = useTranslation()
+	const { i18n, t } = useTranslation()
 	const { pathname } = useLocation()
-
-	console.log(i18n.language)
+	const dispatch = useAppDispatch()
 
 	return (
 		<>
-			{/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-white">
-        <body class="h-full">
-        ```
-      */}
 			<div>
 				<Dialog
 					open={sidebarOpen}
@@ -136,7 +118,7 @@ export default function AdminLayout() {
 																	'h-6 w-6 shrink-0'
 																)}
 															/>
-															{item.name}
+															{t(item.name)}
 														</Link>
 													</li>
 												))}
@@ -144,16 +126,33 @@ export default function AdminLayout() {
 										</li>
 
 										<li className='mt-auto'>
-											<Link
-												to={''}
-												className='flex p-2 -mx-2 text-sm font-semibold leading-6 text-gray-700 rounded-md group gap-x-3 hover:bg-gray-50 hover:text-indigo-600'
-											>
-												<Cog6ToothIcon
-													aria-hidden='true'
-													className='w-6 h-6 text-gray-400 shrink-0 group-hover:text-indigo-600'
-												/>
-												Settings
-											</Link>
+											<Alert>
+												<DialogTrigger className='w-full'>
+													<button className='flex w-full p-2 -mx-2 text-sm font-semibold leading-6 text-red-500 rounded-md group gap-x-3 hover:bg-gray-50 hover:text-red-600'>
+														<LogOut
+															aria-hidden='true'
+															className='w-6 h-6 text-red-400 shrink-0 group-hover:text-red-600'
+														/>
+														{t('logout')}
+													</button>
+												</DialogTrigger>
+												<DialogContent onClick={e => e.stopPropagation()}>
+													<DialogHeader onClick={e => e.stopPropagation()}>
+														<DialogTitle>{t('want_logout')}</DialogTitle>
+													</DialogHeader>
+													<DialogFooter>
+														<Button
+															type='submit'
+															onClick={e => {
+																e.stopPropagation()
+																dispatch(logout())
+															}}
+														>
+															{t('yes')}
+														</Button>
+													</DialogFooter>
+												</DialogContent>
+											</Alert>
 										</li>
 									</ul>
 								</nav>
@@ -197,20 +196,40 @@ export default function AdminLayout() {
 															'h-6 w-6 shrink-0'
 														)}
 													/>
-													{item.name}
+													{t(item.name)}
 												</Link>
 											</li>
 										))}
 									</ul>
 								</li>
 								<li className='mt-auto'>
-									<button className='flex w-full p-2 -mx-2 text-sm font-semibold leading-6 text-gray-700 rounded-md group gap-x-3 hover:bg-gray-50 hover:text-indigo-600'>
-										<Cog6ToothIcon
-											aria-hidden='true'
-											className='w-6 h-6 text-gray-400 shrink-0 group-hover:text-indigo-600'
-										/>
-										Settings
-									</button>
+									<Alert>
+										<DialogTrigger className='w-full'>
+											<button className='flex w-full p-2 -mx-2 text-sm font-semibold leading-6 text-red-500 rounded-md group gap-x-3 hover:bg-gray-50 hover:text-red-600'>
+												<LogOut
+													aria-hidden='true'
+													className='w-6 h-6 text-red-400 shrink-0 group-hover:text-red-600'
+												/>
+												{t('logout')}
+											</button>
+										</DialogTrigger>
+										<DialogContent onClick={e => e.stopPropagation()}>
+											<DialogHeader onClick={e => e.stopPropagation()}>
+												<DialogTitle>{t('want_logout')}</DialogTitle>
+											</DialogHeader>
+											<DialogFooter>
+												<Button
+													type='submit'
+													onClick={e => {
+														e.stopPropagation()
+														dispatch(logout())
+													}}
+												>
+													{t('yes')}
+												</Button>
+											</DialogFooter>
+										</DialogContent>
+									</Alert>
 								</li>
 							</ul>
 						</nav>
@@ -260,14 +279,19 @@ export default function AdminLayout() {
 								<Menu as='div' className='relative'>
 									<MenuButton className='-m-1.5 flex items-center p-1.5'>
 										<span className='sr-only'>Open user menu</span>
-										<span className='fi fi-uz'></span>
+										<span
+											className={`fi fi-${
+												userNavigation.find(item => item.lang === i18n.language)
+													?.icon
+											}`}
+										></span>
 										<span className='hidden lg:flex lg:items-center'>
 											<span
 												aria-hidden='true'
 												className='ml-2 text-sm font-semibold leading-6 text-gray-900'
 											>
 												{userNavigation.find(
-													item => item.icon === i18n.language
+													item => item.lang === i18n.language
 												)?.name || 'Uz'}
 											</span>
 										</span>
@@ -280,7 +304,7 @@ export default function AdminLayout() {
 											<MenuItem key={item.name}>
 												<button
 													onClick={() => {
-														i18n.changeLanguage(item.icon)
+														i18n.changeLanguage(item.lang)
 													}}
 													className='flex gap-2 items-center px-3 py-1 text-sm leading-6 text-gray-900 data-[focus]:bg-gray-50 w-full'
 												>

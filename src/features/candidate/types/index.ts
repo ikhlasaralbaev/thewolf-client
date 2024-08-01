@@ -80,4 +80,7 @@ export interface ICreateResult {
 	candidate: number
 	test: number
 	totalQuestions: number
+	isPassed: boolean
+	totalSteps: number
+	passedSteps: number
 }

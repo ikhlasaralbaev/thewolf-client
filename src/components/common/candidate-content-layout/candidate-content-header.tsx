@@ -2,9 +2,9 @@ import { LogoSvg } from '@/assets'
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { useTranslation } from 'react-i18next'
 const userNavigation = [
-	{ icon: 'uz', name: 'Uzbek', href: '#' },
-	{ icon: 'ru', name: 'Russian', href: '#' },
-	{ icon: 'us', name: 'English', href: '#' },
+	{ icon: 'uz', lang: 'uz', name: 'Uzbek', href: '#' },
+	{ icon: 'ru', lang: 'ru', name: 'Russian', href: '#' },
+	{ icon: 'us', lang: 'en', name: 'English', href: '#' },
 ]
 const CandidateContentHeader = () => {
 	const { i18n } = useTranslation()
@@ -15,13 +15,17 @@ const CandidateContentHeader = () => {
 			<Menu as='div' className='relative'>
 				<MenuButton className='-m-1.5 flex items-center p-1.5'>
 					<span className='sr-only'>Open user menu</span>
-					<span className='fi fi-uz'></span>
+					<span
+						className={`fi fi-${
+							userNavigation.find(item => item.lang === i18n.language)?.icon
+						}`}
+					></span>
 					<span className='hidden lg:flex lg:items-center'>
 						<span
 							aria-hidden='true'
 							className='ml-2 text-sm font-semibold leading-6 text-gray-900'
 						>
-							{userNavigation.find(item => item.icon === i18n.language)?.name ||
+							{userNavigation.find(item => item.lang === i18n.language)?.name ||
 								'Uz'}
 						</span>
 					</span>
@@ -34,7 +38,7 @@ const CandidateContentHeader = () => {
 						<MenuItem key={item.name}>
 							<button
 								onClick={() => {
-									i18n.changeLanguage(item.icon)
+									i18n.changeLanguage(item.lang)
 								}}
 								className='flex gap-2 items-center px-3 py-1 text-sm leading-6 text-gray-900 data-[focus]:bg-gray-50 w-full'
 							>

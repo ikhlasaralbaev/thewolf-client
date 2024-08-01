@@ -1,11 +1,15 @@
 // src/components/BackButton.js
 import { useNavigate } from 'react-router-dom'
 
-const BackButton = () => {
+const BackButton = ({ path }: { path?: string }) => {
 	const navigate = useNavigate()
 
 	const handleBack = () => {
-		navigate(-1)
+		if (path) {
+			navigate(path, { replace: true })
+		} else {
+			navigate(-1)
+		}
 	}
 
 	return (

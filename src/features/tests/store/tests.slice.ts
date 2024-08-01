@@ -31,6 +31,7 @@ interface ITestsInitialState {
 	isLoadingQuestions: boolean
 	stepDetails: IStepDetails | null
 	isCreatingQuestion: boolean
+	selectedTestId: number | string | null
 }
 
 const initialState: ITestsInitialState = {
@@ -45,12 +46,17 @@ const initialState: ITestsInitialState = {
 	isLoadingQuestions: false,
 	stepDetails: null,
 	isCreatingQuestion: false,
+	selectedTestId: null,
 }
 
 export const testsSlice = createSlice({
 	name: 'tests',
 	initialState,
-	reducers: {},
+	reducers: {
+		setSelectedTestId: (state, action) => {
+			state.selectedTestId = action.payload
+		},
+	},
 	extraReducers: builder => {
 		builder
 			.addCase(getAllTestsAction.pending, state => {
@@ -153,7 +159,7 @@ export const testsSlice = createSlice({
 			.addCase(deleteQuestionAction.pending, state => {
 				state.isCreatingQuestion = true
 			})
-			.addCase(deleteQuestionAction.fulfilled, (state, action) => {
+			.addCase(deleteQuestionAction.fulfilled, state => {
 				state.isCreatingQuestion = false
 			})
 			.addCase(deleteQuestionAction.rejected, state => {
@@ -162,4 +168,5 @@ export const testsSlice = createSlice({
 	},
 })
 
+export const { setSelectedTestId } = testsSlice.actions
 export default testsSlice.reducer

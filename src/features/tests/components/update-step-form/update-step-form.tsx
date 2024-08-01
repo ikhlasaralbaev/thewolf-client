@@ -2,41 +2,55 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAppDispatch, useAppSelector } from '@/hooks/store-hooks'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { createStepValidator } from '../../lib/validations'
-import { createStepAction } from '../../store/tests.actions'
+import { getTestStepsAction, updateStepAction } from '../../store/tests.actions'
+import { IStep } from '../../types'
 
-const CreateStepForm = ({ onComplete }: { onComplete: () => void }) => {
+const UpdateStepForm = ({
+	onComplete,
+	initialData,
+}: {
+	onComplete: () => void
+	initialData: IStep
+}) => {
 	const { isCreatingTest, selectedTestId } = useAppSelector(
 		state => state.tests
 	)
+	const { t } = useTranslation()
 
 	const {
 		control,
 		handleSubmit,
 		formState: { errors },
+		reset,
 	} = useForm({
 		resolver: yupResolver(createStepValidator),
 	})
 
 	const dispatch = useAppDispatch()
 
-	const { t } = useTranslation()
-
 	const onSubmit = (data: any) => {
-		dispatch(createStepAction({ ...data, test: Number(selectedTestId) })).then(
-			res => {
-				if (res.type === 'tests/step-create/fulfilled') {
-					toast.success(t('step_created'))
-					onComplete()
-				} else {
-					toast.error(t('step_error'))
-				}
+		dispatch(updateStepAction({ data, id: initialData.id })).then(res => {
+			if (res.type === 'tests/step-update/fulfilled') {
+				toast.success(t('step_updated'))
+				onComplete()
+				dispatch(getTestStepsAction({ test_id: selectedTestId! }))
+			} else {
+				toast.error(t('step_error'))
 			}
-		)
+		})
 	}
+
+	useEffect(() => {
+		reset({
+			title: initialData?.title,
+			minPercent: initialData.minPercent,
+		})
+	}, [initialData])
 
 	return (
 		<form className='grid' onSubmit={handleSubmit(onSubmit)}>
@@ -57,7 +71,9 @@ const CreateStepForm = ({ onComplete }: { onComplete: () => void }) => {
 				<Controller
 					name='minPercent'
 					control={control}
-					render={({ field }) => <Input type='number' {...field} />}
+					render={({ field }) => (
+						<Input placeholder='%' type='number' {...field} />
+					)}
 				/>
 				{errors.minPercent && (
 					<p className='mt-1 text-sm text-red-500'>
@@ -67,10 +83,10 @@ const CreateStepForm = ({ onComplete }: { onComplete: () => void }) => {
 			</div>
 
 			<Button className='mx-auto' type='submit' isLoading={isCreatingTest}>
-				{t('add')}
+				{t('save')}
 			</Button>
 		</form>
 	)
 }
 
-export default CreateStepForm
+export default UpdateStepForm

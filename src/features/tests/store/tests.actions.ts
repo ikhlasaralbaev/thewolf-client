@@ -3,7 +3,10 @@ import {
 	createQuestionUrl,
 	createStepUrl,
 	createTestUrl,
+	deleteAnswerUrl,
 	deleteQuestionUrl,
+	deleteStepUrl,
+	deleteTestUrl,
 	getAllTests,
 	getDirectionsUrl,
 	getStepDetailsUrl,
@@ -11,6 +14,7 @@ import {
 	getTestSteps,
 	updateAnswerUrl,
 	updateQuestionUrl,
+	updateStepUrl,
 } from '@/api/api-constants'
 import axiosInstance from '@/api/api.interceptor'
 import { createAsyncThunk } from '@reduxjs/toolkit'
@@ -66,6 +70,19 @@ export const createStepAction = createAsyncThunk<IStep, ICreateStep>(
 		}
 	}
 )
+
+export const updateStepAction = createAsyncThunk<
+	IStep,
+	{ data: Partial<ICreateStep>; id: string | number }
+>('tests/step-update', async (data, thunkAPI) => {
+	try {
+		const res = await axiosInstance.patch(updateStepUrl(data.id), data.data)
+
+		return res.data
+	} catch (error) {
+		return thunkAPI.rejectWithValue(error)
+	}
+})
 
 export const getAllDirectionsAction = createAsyncThunk<
 	IGetResponseData<IDirection>
@@ -175,6 +192,45 @@ export const deleteQuestionAction = createAsyncThunk(
 	async ({ question_id }: { question_id: number | string }, thunkAPI) => {
 		try {
 			const res = await axiosInstance.delete(deleteQuestionUrl(question_id))
+
+			return res.data
+		} catch (error) {
+			return thunkAPI.rejectWithValue(error)
+		}
+	}
+)
+
+export const deleteStepAction = createAsyncThunk(
+	'tests/delete-step',
+	async ({ step_id }: { step_id: number | string }, thunkAPI) => {
+		try {
+			const res = await axiosInstance.delete(deleteStepUrl(step_id))
+
+			return res.data
+		} catch (error) {
+			return thunkAPI.rejectWithValue(error)
+		}
+	}
+)
+
+export const deleteTestAction = createAsyncThunk(
+	'tests/delete-test',
+	async ({ test_id }: { test_id: number | string }, thunkAPI) => {
+		try {
+			const res = await axiosInstance.delete(deleteTestUrl(test_id))
+
+			return res.data
+		} catch (error) {
+			return thunkAPI.rejectWithValue(error)
+		}
+	}
+)
+
+export const deleteAnswerAction = createAsyncThunk(
+	'tests/delete-answer',
+	async ({ answer_id }: { answer_id: number | string }, thunkAPI) => {
+		try {
+			const res = await axiosInstance.delete(deleteAnswerUrl(answer_id))
 
 			return res.data
 		} catch (error) {

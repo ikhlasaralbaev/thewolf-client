@@ -95,18 +95,32 @@ const QuestionItem: FC<Props> = ({ question, index }) => {
 							<li>
 								<Label className='flex items-start space-x-2 mb-[9px]'>
 									<Checkbox
+										checked={answers
+											.find(curr => curr.question_id === question.id)
+											?.answers.includes(item.id)}
 										onCheckedChange={e => {
 											if (e) {
-												handleAnswer([
-													...(answers.find(
+												if (
+													answers.find(curr => curr.question_id === question.id)
+														?.answers.length === question.correctAnswers
+												) {
+													const curr = answers.find(
 														x =>
 															x.question_id?.toString() ===
 															question.id?.toString()
-													)?.answers || []),
-													item.id,
-												])
+													)?.answers
+													handleAnswer([...(curr?.slice(1) || []), item.id])
+												} else {
+													handleAnswer([
+														...(answers.find(
+															x =>
+																x.question_id?.toString() ===
+																question.id?.toString()
+														)?.answers || []),
+														item.id,
+													])
+												}
 											} else {
-												console.log(e)
 												handleAnswer(
 													answers
 														.find(x => x.question_id === question.id)

@@ -5,6 +5,8 @@ import App from './App.tsx'
 import './index.scss'
 import { store } from './store/index.ts'
 
+import './i18n'
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<BrowserRouter>
 		<Provider store={store}>

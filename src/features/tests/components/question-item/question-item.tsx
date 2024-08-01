@@ -14,9 +14,16 @@ import { useAppDispatch } from '@/hooks/store-hooks'
 import { Trash } from 'lucide-react'
 import { FC, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { deleteQuestionAction, getStepDetails } from '../../store/tests.actions'
-import { IQuestion } from '../../types'
+import {
+	deleteAnswerAction,
+	deleteQuestionAction,
+	getStepDetails,
+} from '../../store/tests.actions'
+import { IAnswer, IQuestion } from '../../types'
+import CreateOneAnswerForm from '../create-one-answer/create-one-answer'
+import UpdateOneAnswerForm from '../update-one-answer/update-one-answer'
 import UpdateQuestionForm from '../update-question-form/update-question-form'
 
 interface Props {
@@ -28,15 +35,33 @@ const QuestionItem: FC<Props> = ({ question }) => {
 	const params = useParams()
 	const [dialog, setDialog] = useState(false)
 	const [updateModal, setUpdateModal] = useState(false)
+	const [addAnswerModal, setAddAnserModal] = useState(false)
+	const [updateAnswerModal, setUpdateAnswerModal] = useState(false)
+	const [selectedAnswer, setSelectedAnswer] = useState<IAnswer | null>(null)
+	const [deleteAnswerDialog, setDeleteAnswerDialog] = useState(false)
+	const { t } = useTranslation()
 
 	const deleteItem = () => {
 		dispatch(deleteQuestionAction({ question_id: question.id })).then(res => {
 			if (res.type === 'tests/delete-question/fulfilled') {
 				dispatch(getStepDetails({ step_id: params.id! }))
-				toast.success('Question deleted successful!')
+				toast.success(t('question_deleted'))
 				setDialog(false)
 			}
 		})
+	}
+
+	const deleteAns = () => {
+		dispatch(deleteAnswerAction({ answer_id: selectedAnswer?.id! })).then(
+			res => {
+				if (res.type === 'tests/delete-answer/fulfilled') {
+					dispatch(getStepDetails({ step_id: params.id! }))
+					toast.success(t('answer_deleted'))
+					setDeleteAnswerDialog(false)
+					setSelectedAnswer(null)
+				}
+			}
+		)
 	}
 
 	return (
@@ -60,19 +85,6 @@ const QuestionItem: FC<Props> = ({ question }) => {
 						>
 							<Trash className='text-red-500 tex-xs' />
 						</Button>
-
-						<Dialog open={dialog} onOpenChange={setDialog}>
-							<DialogContent>
-								<DialogHeader>
-									<DialogTitle>Do you want delete question?</DialogTitle>
-								</DialogHeader>
-								<DialogFooter>
-									<Button type='submit' onClick={deleteItem}>
-										Yes
-									</Button>
-								</DialogFooter>
-							</DialogContent>
-						</Dialog>
 					</div>
 				</div>
 				{question.file_paths.length ? (
@@ -86,6 +98,8 @@ const QuestionItem: FC<Props> = ({ question }) => {
 					</div>
 				) : null}
 			</div>
+
+			<div className='w-full my-2 mb-4 border-t'></div>
 
 			{!question.isMultipleAnswers ? (
 				<RadioGroup
@@ -101,8 +115,30 @@ const QuestionItem: FC<Props> = ({ question }) => {
 									value={String(item.id)}
 									id='option-one'
 								/>
-								<Label htmlFor='option-one'>
-									<span>{item.title}</span>
+								<Label htmlFor='option-one' className='w-full'>
+									<div className='flex items-center justify-between w-full'>
+										<span>{item.title}</span>
+										<div className='flex '>
+											<span
+												onClick={() => {
+													setSelectedAnswer(item)
+													setUpdateAnswerModal(true)
+												}}
+												className='inline-flex items-center px-3 text-sm font-light underline cursor-pointer text-primary'
+											>
+												{t('update')}
+											</span>
+											<span
+												onClick={() => {
+													setSelectedAnswer(item)
+													setDeleteAnswerDialog(true)
+												}}
+												className='inline-flex items-center px-3 text-sm font-light text-red-500 underline cursor-pointer'
+											>
+												{t('delete')}
+											</span>
+										</div>
+									</div>
 
 									<div className='relative grid w-full grid-cols-3 mt-2'>
 										{item.file_paths.map(item => (
@@ -120,33 +156,123 @@ const QuestionItem: FC<Props> = ({ question }) => {
 			) : (
 				<div className='grid gap-2'>
 					{question.answers.map(item => (
-						<div className='flex items-center space-x-2'>
+						<div
+							className={`flex ${
+								!item.file_paths.length ? 'items-center' : 'items-start'
+							} space-x-4`}
+						>
 							<Checkbox disabled checked={item.isCorrect} />
-							<Label htmlFor='option-one'>{item.title}</Label>
-
-							{item.file_paths.map(item => (
-								<div className='relative'>
-									<img
-										className='h-[100px] bg-grayBg object-cover w-full'
-										src={'http://localhost:8000' + item}
-									/>
+							<Label htmlFor='option-one' className='w-full '>
+								<div className='flex items-center justify-between w-full '>
+									<span>{item.title}</span>
+									<div className='flex'>
+										<span
+											onClick={() => {
+												setSelectedAnswer(item)
+												setUpdateAnswerModal(true)
+											}}
+											className='inline-flex items-center px-3 text-sm font-light underline cursor-pointer text-primary'
+										>
+											{t('update')}
+										</span>
+										<span
+											onClick={() => {
+												setSelectedAnswer(item)
+												setDeleteAnswerDialog(true)
+											}}
+											className='inline-flex items-center px-3 text-sm font-light text-red-500 underline cursor-pointer'
+										>
+											{t('delete')}
+										</span>
+									</div>
 								</div>
-							))}
+								{item.file_paths.length ? (
+									<div className='grid grid-cols-3 py-2'>
+										{item.file_paths.map(item => (
+											<div className='relative'>
+												<img
+													className='h-[100px] bg-grayBg object-cover w-full'
+													src={'http://localhost:8000' + item}
+												/>
+											</div>
+										))}
+									</div>
+								) : null}
+							</Label>
 						</div>
 					))}
 				</div>
 			)}
 
+			<div className='w-full my-2 mt-4 border-t'></div>
+
+			<span
+				onClick={() => setAddAnserModal(true)}
+				className='inline-flex items-center px-3 text-sm font-light underline cursor-pointer text-primary'
+			>
+				{t('add_answer')}
+			</span>
+
+			<Dialog open={dialog} onOpenChange={setDialog}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>{t('want_delete_question')}</DialogTitle>
+					</DialogHeader>
+					<DialogFooter>
+						<Button type='submit' onClick={deleteItem}>
+							{t('yes')}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
 			<Dialog open={updateModal} onOpenChange={setUpdateModal}>
 				<DialogContent className='xs:w-full'>
 					<DialogHeader>
-						<DialogTitle>Create test</DialogTitle>
+						<DialogTitle>{t('update_question')}</DialogTitle>
 					</DialogHeader>
 
 					<UpdateQuestionForm
 						onComplete={() => setUpdateModal(false)}
 						question={question}
 					/>
+				</DialogContent>
+			</Dialog>
+			<Dialog open={addAnswerModal} onOpenChange={setAddAnserModal}>
+				<DialogContent className='xs:w-full'>
+					<DialogHeader>
+						<DialogTitle>{t('add_answer')}</DialogTitle>
+					</DialogHeader>
+
+					<CreateOneAnswerForm
+						onComplete={() => setAddAnserModal(false)}
+						question={question}
+					/>
+				</DialogContent>
+			</Dialog>
+			<Dialog open={updateAnswerModal} onOpenChange={setUpdateAnswerModal}>
+				<DialogContent className='xs:w-full'>
+					<DialogHeader>
+						<DialogTitle>{t('update_answer')}</DialogTitle>
+					</DialogHeader>
+
+					<UpdateOneAnswerForm
+						onComplete={() => setUpdateAnswerModal(false)}
+						question={question}
+						answer={selectedAnswer!}
+					/>
+				</DialogContent>
+			</Dialog>
+			<Dialog open={deleteAnswerDialog} onOpenChange={setDeleteAnswerDialog}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>{t('want_delete_answer')}</DialogTitle>
+					</DialogHeader>
+					<DialogFooter>
+						<Button type='submit' onClick={deleteAns}>
+							{t('yes')}
+						</Button>
+					</DialogFooter>
 				</DialogContent>
 			</Dialog>
 		</div>

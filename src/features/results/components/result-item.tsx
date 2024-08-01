@@ -1,16 +1,20 @@
 import { regions } from '@/features/candidate/lib/data'
 import { Map, Phone } from 'lucide-react'
+import moment from 'moment'
 import { FC } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import { IResult } from '../types'
-
 interface Props {
 	result: IResult
 }
 
 const ResultItem: FC<Props> = ({ result }) => {
+	const { t, i18n } = useTranslation()
 	return (
-		<div
-			className={`flex justify-between items-start px-5 py-[14px] mb-[2px] cursor-pointer ${
+		<Link
+			to={`/admin/result/${result.id}`}
+			className={`flex xs:flex-col md:flex-row md:justify-between items-start px-5 py-[14px] mb-[2px] cursor-pointer gap-4 ${
 				result.isPassed ? 'bg-green-200' : 'bg-red-200'
 			}`}
 		>
@@ -23,22 +27,25 @@ const ResultItem: FC<Props> = ({ result }) => {
 				<li className='flex gap-1'>
 					<h1 className='text-[16px]'>{result.test.title}: </h1>
 					<h1 className='text-[16px]'>
-						{result.correctAnswers} правильных ответов
+						{result.correctAnswers} {t('correct_answers')}
 					</h1>
 				</li>
 				<li className='text-sm font-light text-gray-400'>
-					<h1>Время прохождения теста: 12.12.2024 / 12:12</h1>
+					<h1>
+						{t('created_at_result')}:{' '}
+						{moment(result?.createdAt).format('DD.MM.YYYY / HH:mm')}
+					</h1>
 				</li>
 			</ul>
 
-			<ul className='flex flex-col items-end justify-end gap-2'>
+			<ul className='flex flex-col justify-end gap-2 md:items-end'>
 				<li>
 					<h2
 						className={`font-semibold ${
 							result.isPassed ? 'text-green-500' : 'text-red-500'
 						}`}
 					>
-						{result.isPassed ? 'Сдал успешно' : 'Провален'}
+						{result.isPassed ? t('passed') : t('no_passed')}
 					</h2>
 				</li>
 				<li className='flex items-center gap-1'>
@@ -46,12 +53,16 @@ const ResultItem: FC<Props> = ({ result }) => {
 				</li>
 				<li className='flex items-center gap-1'>
 					<Map className='text-xs text-primary' />{' '}
-					{regions.find(item => item.code === result.candidate.area)?.ru ||
-						result.candidate.area}
+					{i18n.language === 'ru'
+						? regions.find(item => item.code === result.candidate.area)?.ru
+						: i18n.language === 'en'
+						? regions.find(item => item.code === result.candidate.area)?.en
+						: regions.find(item => item.code === result.candidate.area)?.uz ||
+						  result.candidate.area}
 					, {result.candidate.district}
 				</li>
 			</ul>
-		</div>
+		</Link>
 	)
 }
 

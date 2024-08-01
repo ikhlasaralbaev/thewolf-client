@@ -41,7 +41,9 @@ const LoginForm = () => {
 	const onSubmit = (data: ILoginReqType) => {
 		dispatch(loginAction(data)).then(res => {
 			if (res.type === 'auth/login/fulfilled') {
-				toast.success(t('loggged_in'))
+				toast.success(t('logged_in'))
+			} else {
+				toast.error(t('login_or_password_error'))
 			}
 		})
 	}
@@ -62,10 +64,10 @@ const LoginForm = () => {
 						alt='TheWolf Recruiting'
 					/>
 					<h2 className='mt-2 text-[20px] font-[700] text-center text-gray-900'>
-						Добро пожаловать!
+						{t('login_welcome')}
 					</h2>
 					<p className='text-sm text-center text-gray-400'>
-						Войдите в свой аккаунт
+						{t('login_descr')}
 					</p>
 				</div>
 				<form className='mt-8 space-y-6' onSubmit={handleSubmit(onSubmit)}>
@@ -85,8 +87,8 @@ const LoginForm = () => {
 									type='email'
 									autoComplete='email'
 									{...register('email')}
-									className={`bg-transparent px-4 w-full outline-none border-none`}
-									placeholder='Напишите свою почту/логин'
+									className={`bg-transparent px-4 w-full outline-none border-none mx-2 rounded-md`}
+									placeholder={t('enter_email')}
 								/>
 							</label>
 						</div>
@@ -102,8 +104,9 @@ const LoginForm = () => {
 									type={showPassword ? 'text' : 'password'}
 									autoComplete='current-password'
 									{...register('password')}
-									className={`bg-transparent px-4 w-full outline-none border-none`}
-									placeholder='Пароль'
+									className={`bg-transparent px-4 w-full outline-none border-none mx-2 rounded-md`}
+									style={{ border: 'none!important' }}
+									placeholder={t('enter_your_password')}
 								/>
 								<button
 									type='button'
@@ -122,7 +125,7 @@ const LoginForm = () => {
 							type='submit'
 							className='relative flex justify-center w-[180px] px-4 text-[20px] font-medium text-white bg-primary border border-transparent rounded-[12px] group hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary mx-auto  items-center h-[60px]'
 						>
-							Войти
+							{t('login')}
 						</Button>
 					</div>
 				</form>

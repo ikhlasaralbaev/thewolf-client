@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from '@/hooks/store-hooks'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { createTestValidator } from '../../lib/validations'
 import { createTestAction } from '../../store/tests.actions'
 
@@ -26,11 +27,12 @@ const CreateTestForm = ({ onComplete }: { onComplete: () => void }) => {
 	})
 
 	const dispatch = useAppDispatch()
+	const { t } = useTranslation()
 
 	const onSubmit = (data: any) => {
 		dispatch(createTestAction({ ...data })).then(res => {
 			if (res.type === 'tests/create/fulfilled') {
-				toast.success('Test created successfully!')
+				toast.success(t('test_created'))
 				onComplete()
 			} else {
 				toast.error('Error with create test!')
@@ -41,7 +43,7 @@ const CreateTestForm = ({ onComplete }: { onComplete: () => void }) => {
 	return (
 		<form className='grid' onSubmit={handleSubmit(onSubmit)}>
 			<div className='mb-[20px] grid'>
-				<label className='mb-2'>Напишите название этапа </label>
+				<label className='mb-2'>{t('enter_test_title')}</label>
 				<Controller
 					name='title'
 					control={control}
@@ -53,19 +55,19 @@ const CreateTestForm = ({ onComplete }: { onComplete: () => void }) => {
 			</div>
 
 			<div className='mb-[20px] grid'>
-				<label className='mb-2'>Language</label>
+				<label className='mb-2'>{t('language')}</label>
 				<Controller
 					name='language'
 					control={control}
 					render={({ field }) => (
 						<Select onValueChange={e => field.onChange(e)}>
 							<SelectTrigger className='w-full'>
-								<SelectValue placeholder='Select a direction' />
+								<SelectValue placeholder={t('language')} />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value={'uz'}>Uzbek</SelectItem>
-								<SelectItem value={'ru'}>Russian</SelectItem>
-								<SelectItem value={'en'}>English</SelectItem>
+								<SelectItem value={'uz'}>{t('uz')}</SelectItem>
+								<SelectItem value={'ru'}>{t('ru')}</SelectItem>
+								<SelectItem value={'en'}>{t('en')}</SelectItem>
 							</SelectContent>
 						</Select>
 					)}
@@ -76,7 +78,7 @@ const CreateTestForm = ({ onComplete }: { onComplete: () => void }) => {
 			</div>
 
 			<Button className='mx-auto' type='submit' isLoading={isCreatingTest}>
-				Добавить
+				{t('add')}
 			</Button>
 		</form>
 	)

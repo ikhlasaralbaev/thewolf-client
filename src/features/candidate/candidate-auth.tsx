@@ -12,12 +12,12 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { getAllTestsAction } from '../tests/store/tests.actions'
 import { regions } from './lib/data'
 import { candidateCreateValidator } from './lib/validator/candidate.validators'
 import { createCandidate } from './store/candidate.actions'
-
 const CandidateAuth = () => {
 	const { isCreatingCandidate, candidate, test } = useAppSelector(
 		state => state.candidate
@@ -25,6 +25,7 @@ const CandidateAuth = () => {
 	const [testLanguage, setTestLanguage] = useState('uz')
 	const { tests } = useAppSelector(state => state.tests)
 	const navigate = useNavigate()
+	const { t, i18n } = useTranslation()
 
 	const {
 		control,
@@ -39,11 +40,17 @@ const CandidateAuth = () => {
 	const onSubmit = (data: any) => {
 		dispatch(
 			createCandidate({ data: { ...data, test: Number(data.direction) } })
-		).then(res => {
-			if (res.type === 'candidate/craete/fulfilled') {
-				toast.success('Welcome to first step of tests!')
-			}
-		})
+		)
+			.then(res => {
+				if (res.type === 'candidate/craete/fulfilled') {
+					toast.success('Welcome to first step of tests!')
+				} else {
+					toast.error(t('error'))
+				}
+			})
+			.catch(() => {
+				toast.error(t('error'))
+			})
 	}
 
 	useEffect(() => {
@@ -59,12 +66,12 @@ const CandidateAuth = () => {
 	return (
 		<form onSubmit={handleSubmit(onSubmit)}>
 			<div className='flex flex-col items-center justify-center my-[20px]'>
-				<h1 className='text-[20px] font-bold'>Заполните опросник для...</h1>
-				<p className='text-[16px] font-light'>Первый этап отбора</p>
+				<h1 className='text-[20px] font-bold'>{t('enter_your_details')}</h1>
+				<p className='text-[16px] font-light'>{t('for_first_step')}</p>
 			</div>
 			<div className='grid xs:grid-cols-1 md:grid-cols-2 gap-x-4 '>
 				<div className='mb-[10px] grid'>
-					<label className='mb-2'>FIO</label>
+					<label className='mb-2'>{t('fio')}</label>
 					<Controller
 						name='fullName'
 						control={control}
@@ -77,7 +84,7 @@ const CandidateAuth = () => {
 					/>
 				</div>
 				<div className='mb-[10px] grid'>
-					<label className='mb-2'>Phone</label>
+					<label className='mb-2'>{t('phone')}</label>
 					<Controller
 						name='phone'
 						control={control}
@@ -91,13 +98,15 @@ const CandidateAuth = () => {
 					/>
 				</div>
 				<div className='mb-[10px] grid'>
-					<label className='mb-2'>Birthdate</label>
+					<label className='mb-2'>{t('birthdate')}</label>
 					<Controller
 						name='birthdate'
 						control={control}
 						render={({ field }) => (
 							<Input
-								className={`border ${errors.birthdate ? 'border-red-500' : ''}`}
+								className={`border w-full ${
+									errors.birthdate ? 'border-red-500' : ''
+								}`}
 								type='date'
 								{...field}
 							/>
@@ -105,7 +114,7 @@ const CandidateAuth = () => {
 					/>
 				</div>
 				<div className='mb-[10px] grid'>
-					<label className='mb-2'>Region</label>
+					<label className='mb-2'>{t('region')}</label>
 					<Controller
 						name='area'
 						control={control}
@@ -117,11 +126,17 @@ const CandidateAuth = () => {
 								}}
 							>
 								<SelectTrigger className='w-full'>
-									<SelectValue placeholder='Select a language' />
+									<SelectValue placeholder={t('region')} />
 								</SelectTrigger>
 								<SelectContent>
 									{regions.map(item => (
-										<SelectItem value={item.code}>{item.en}</SelectItem>
+										<SelectItem value={item.code}>
+											{i18n.language === 'en'
+												? item.en
+												: i18n.language === 'ru'
+												? item.ru
+												: item.uz}
+										</SelectItem>
 									))}
 								</SelectContent>
 							</Select>
@@ -129,7 +144,7 @@ const CandidateAuth = () => {
 					/>
 				</div>
 				<div className='mb-[10px] grid'>
-					<label className='mb-2'>District</label>
+					<label className='mb-2'>{t('district')}</label>
 					<Controller
 						name='district'
 						control={control}
@@ -142,7 +157,7 @@ const CandidateAuth = () => {
 					/>
 				</div>
 				<div className='mb-[10px] grid'>
-					<label className='mb-2'>Lastjob</label>
+					<label className='mb-2'>{t('lastJob')}</label>
 					<Controller
 						name='lastJob'
 						control={control}
@@ -155,7 +170,7 @@ const CandidateAuth = () => {
 					/>
 				</div>
 				<div className='mb-[10px] grid'>
-					<label className='mb-2'>Language</label>
+					<label className='mb-2'>{t('language')}</label>
 
 					<Select
 						value={testLanguage}
@@ -165,17 +180,17 @@ const CandidateAuth = () => {
 						}}
 					>
 						<SelectTrigger className='w-full'>
-							<SelectValue placeholder='Select a language' />
+							<SelectValue placeholder={t('language') + ':'} />
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value={'uz'}>Uzbek</SelectItem>
-							<SelectItem value={'ru'}>Russian</SelectItem>
-							<SelectItem value={'en'}>English</SelectItem>
+							<SelectItem value={'uz'}>{t('uz')}</SelectItem>
+							<SelectItem value={'ru'}>{t('ru')}</SelectItem>
+							<SelectItem value={'en'}>{t('en')}</SelectItem>
 						</SelectContent>
 					</Select>
 				</div>
 				<div className='mb-[10px] grid'>
-					<label className='mb-2'>Direction</label>
+					<label className='mb-2'>{t('direction')}</label>
 					<Controller
 						name='direction'
 						control={control}
@@ -187,7 +202,7 @@ const CandidateAuth = () => {
 								}}
 							>
 								<SelectTrigger className='w-full'>
-									<SelectValue placeholder='Select a direction' />
+									<SelectValue placeholder={t('direction')} />
 								</SelectTrigger>
 								<SelectContent>
 									{tests.map(item => (
@@ -202,18 +217,33 @@ const CandidateAuth = () => {
 				</div>
 
 				<div className='grid '>
-					<label className='mb-2'>Experience</label>
+					<label className='mb-2'>{t('experience')}</label>
 					<Controller
 						name='experience'
 						control={control}
 						render={({ field }) => (
-							<Input
-								className={`border ${
-									errors.experience ? 'border-red-500' : ''
-								}`}
-								type='number'
-								{...field}
-							/>
+							<Select
+								onValueChange={lang => {
+									field.onChange(lang)
+									console.log(lang)
+								}}
+							>
+								<SelectTrigger
+									className={`border w-full ${
+										errors.experience ? 'border-red-500' : ''
+									}`}
+								>
+									<SelectValue placeholder={t('experience')} />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value={'no_experience'}>
+										{t('no_experience')}
+									</SelectItem>
+									<SelectItem value={'exp-6-12'}>{t('exp-6-12')}</SelectItem>
+									<SelectItem value={'exp-1-3'}>{t('exp-1-3')}</SelectItem>
+									<SelectItem value={'exp-3+'}>{t('exp-3+')}</SelectItem>
+								</SelectContent>
+							</Select>
 						)}
 					/>
 				</div>
@@ -224,7 +254,7 @@ const CandidateAuth = () => {
 					type='submit'
 					isLoading={isCreatingCandidate}
 				>
-					Начать тест
+					{t('start_test')}
 				</Button>
 			</div>
 		</form>

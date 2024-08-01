@@ -1,21 +1,46 @@
 import { MenuDotsSvg } from '@/assets'
 import {
+	Dialog,
+	DialogContent,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog'
+import { useAppDispatch, useAppSelector } from '@/hooks/store-hooks'
+import {
 	Button,
 	Menu,
 	MenuButton,
 	MenuItem,
 	MenuItems,
 } from '@headlessui/react'
-import { FC } from 'react'
+import { FC, useState } from 'react'
+import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import { deleteStepAction, getTestStepsAction } from '../../store/tests.actions'
 import { IStep } from '../../types'
-
+import UpdateStepForm from '../update-step-form/update-step-form'
 interface Props {
 	step: IStep
 }
 
 const StepItem: FC<Props> = ({ step }) => {
 	const navigation = useNavigate()
+	const [dialog, setDialog] = useState(false)
+	const [updateDialog, setUpdateDialog] = useState(false)
+	const dispatch = useAppDispatch()
+	const { selectedTestId } = useAppSelector(state => state.tests)
+	const { t } = useTranslation()
+
+	const deleteItem = () => {
+		dispatch(deleteStepAction({ step_id: step.id })).then(res => {
+			if (res.type === 'tests/delete-step/fulfilled') {
+				toast.success(t('step_deleted'))
+				dispatch(getTestStepsAction({ test_id: selectedTestId! }))
+			}
+		})
+	}
 
 	return (
 		<div
@@ -24,7 +49,14 @@ const StepItem: FC<Props> = ({ step }) => {
 			}}
 			className='bg-stepBg px-3 py-[14px] flex items-center justify-between rounded-[8px] cursor-pointer'
 		>
-			<h2 className='text-gray-500 text-[16px] font-semibold'>{step.title}</h2>
+			<div>
+				<h2 className='text-gray-500 text-[16px] font-semibold'>
+					{step.title}
+				</h2>
+				<span className='text-primary text-[14px] font-semibold'>
+					{t('min')} {step.minPercent}%
+				</span>
+			</div>
 
 			<Menu as='div' className='relative'>
 				<MenuButton
@@ -42,22 +74,57 @@ const StepItem: FC<Props> = ({ step }) => {
 				>
 					<MenuItem>
 						<button
-							onClick={e => e.stopPropagation()}
+							onClick={e => {
+								e.stopPropagation()
+								setUpdateDialog(true)
+							}}
 							className='flex gap-2 items-center px-3 py-1 text-sm leading-6 text-gray-900 data-[focus]:bg-gray-50 w-full'
 						>
-							Переименовать
+							{t('update')}
 						</button>
 					</MenuItem>
 					<MenuItem>
 						<button
-							onClick={e => e.stopPropagation()}
+							onClick={e => {
+								e.stopPropagation()
+
+								setDialog(true)
+							}}
 							className='flex gap-2 items-center px-3 py-1 text-sm leading-6 text-red-600 data-[focus]:bg-gray-50 w-full'
 						>
-							Удалить этап
+							{t('delete')}
 						</button>
 					</MenuItem>
 				</MenuItems>
 			</Menu>
+
+			<Dialog open={dialog} onOpenChange={setDialog}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>{t('want_delete_question')}</DialogTitle>
+					</DialogHeader>
+					<DialogFooter>
+						<Button
+							type='submit'
+							onClick={e => {
+								e.stopPropagation()
+								deleteItem()
+							}}
+						>
+							{t('yes')}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			<Dialog open={updateDialog} onOpenChange={setUpdateDialog}>
+				<DialogContent onClick={e => e.stopPropagation()}>
+					<DialogHeader onClick={e => e.stopPropagation()}>
+						<DialogTitle>{t('update_step')}</DialogTitle>
+					</DialogHeader>
+					<UpdateStepForm initialData={step} onComplete={() => {}} />
+				</DialogContent>
+			</Dialog>
 		</div>
 	)
 }

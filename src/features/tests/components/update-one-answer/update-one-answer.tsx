@@ -2,14 +2,6 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
 import { useAppDispatch, useAppSelector } from '@/hooks/store-hooks'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from 'react'
@@ -17,15 +9,20 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
-import { createQuestionValidator } from '../../lib/validations'
-import {
-	createAnswerAction,
-	createQuestionAction,
-	getStepDetails,
-} from '../../store/tests.actions'
+import { addAnswerValidator } from '../../lib/validations'
+import { getStepDetails, updateAnswerAction } from '../../store/tests.actions'
+import { IAnswer, IQuestion } from '../../types'
 import FileUploader from '../file-uploader/file-uploader'
 
-const CreateQuestionForm = ({ onComplete }: { onComplete: () => void }) => {
+const UpdateOneAnswerForm = ({
+	onComplete,
+	question,
+	answer,
+}: {
+	onComplete: () => void
+	question: IQuestion
+	answer: IAnswer
+}) => {
 	const { isCreatingTest } = useAppSelector(state => state.tests)
 	const params = useParams()
 	const [isMultipleAnswers, setIsMultipleAnswers] = useState(true)
@@ -37,19 +34,9 @@ const CreateQuestionForm = ({ onComplete }: { onComplete: () => void }) => {
 
 		setValue,
 	} = useForm({
-		resolver: yupResolver(createQuestionValidator),
+		resolver: yupResolver(addAnswerValidator),
 		defaultValues: {
-			answers: [
-				{
-					title: '',
-					isCorrect: false,
-				},
-				{
-					title: '',
-					isCorrect: false,
-				},
-			],
-			isMultipleAnswers: true,
+			answers: [],
 		},
 	})
 
@@ -61,94 +48,45 @@ const CreateQuestionForm = ({ onComplete }: { onComplete: () => void }) => {
 	const dispatch = useAppDispatch()
 
 	const onSubmit = (data: any) => {
-		dispatch(createQuestionAction({ ...data, step: Number(params.id) })).then(
-			(res: any) => {
-				if (res.type === 'tests/create-question/fulfilled') {
-					const promises = data.answers.map((data: any) => {
-						return dispatch(
-							createAnswerAction({ ...data, question: res.payload?.id })
-						)
-					})
+		const promise = data.answers.map((item: IAnswer) => {
+			return dispatch(updateAnswerAction({ data: { ...item }, id: answer.id }))
+		})
 
-					Promise.all(promises).then(() => {
-						toast.success(t('question_created'))
-						onComplete()
-						dispatch(getStepDetails({ step_id: params.id! }))
-					})
-				} else {
-					toast.error(t('error'))
-				}
+		Promise.all(promise).then((res: any) => {
+			console.log(res)
+			if (res[0].type === 'tests/update-answer/fulfilled') {
+				toast.success(t('updated'))
+				onComplete()
+				dispatch(getStepDetails({ step_id: params.id! }))
+			} else {
+				toast.error(t('error'))
 			}
-		)
+		})
 	}
 
 	useEffect(() => {
 		fields.map((_, index) => {
 			setValue(`answers.${index}.isCorrect`, false)
 		})
-	}, [isMultipleAnswers])
+	}, [answer])
+
+	useEffect(() => {
+		setIsMultipleAnswers(question.isMultipleAnswers)
+	}, [question])
+
+	useEffect(() => {
+		if (answer) {
+			append({
+				...answer,
+				video_url: answer.video_url || '',
+				isCorrect: true,
+				file_paths: answer.file_paths || [],
+			})
+		}
+	}, [answer])
 
 	return (
 		<form className='grid' onSubmit={handleSubmit(onSubmit)}>
-			<div className='mb-[20px] grid'>
-				<label className='mb-2'>{t('language')}</label>
-				<Controller
-					name='isMultipleAnswers'
-					control={control}
-					render={({ field }) => (
-						<Select
-							value={field.value ? 'true' : 'false'}
-							onValueChange={e => {
-								setIsMultipleAnswers(e === 'false' ? false : true)
-								field.onChange(e === 'false' ? false : true)
-							}}
-						>
-							<SelectTrigger className='w-full'>
-								<SelectValue placeholder={t('multi_answers')} />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value={'true'}>{t('multi_answers')}</SelectItem>
-								<SelectItem value={'false'}>{t('single_answer')}</SelectItem>
-							</SelectContent>
-						</Select>
-					)}
-				/>
-				{errors.isMultipleAnswers && (
-					<p className='mt-1 text-sm text-red-500'>
-						{errors.isMultipleAnswers.message}
-					</p>
-				)}
-			</div>
-			<div className='mb-[20px] grid'>
-				<label className='mb-2'>{t('question_title')}</label>
-				<Controller
-					name='title'
-					control={control}
-					render={({ field }) => <Textarea {...field} />}
-				/>
-				{errors.title && (
-					<p className='mt-1 text-sm text-red-500'>{errors.title.message}</p>
-				)}
-			</div>
-
-			<div className='mb-[20px] grid'>
-				<Controller
-					name={`file_paths`}
-					control={control}
-					render={({ field }) => {
-						return (
-							<div>
-								<FileUploader
-									isVideo
-									setUrl={url => setValue('video_url', url)}
-									setFiles={files => field.onChange(files)}
-								/>
-							</div>
-						)
-					}}
-				/>
-			</div>
-
 			<div className='w-full mt-2 mb-6 border-b border-b-gray-300' />
 
 			<div className=''>
@@ -166,12 +104,6 @@ const CreateQuestionForm = ({ onComplete }: { onComplete: () => void }) => {
 							<div key={item.id} className='mb-[10px] grid'>
 								<label className='flex items-center justify-between w-full mb-2'>
 									<span>{t('answer_question')}</span>{' '}
-									<span
-										onClick={() => remove(index)}
-										className='text-sm text-red-500 underline cursor-pointer'
-									>
-										{t('delete')}
-									</span>
 								</label>
 								<Controller
 									name={`answers.${index}.title`}
@@ -204,6 +136,7 @@ const CreateQuestionForm = ({ onComplete }: { onComplete: () => void }) => {
 													return (
 														<div>
 															<FileUploader
+																defaultFiles={answer.file_paths}
 																setFiles={files => field.onChange(files)}
 																onRightButtonHandler={() => remove(index)}
 															/>
@@ -224,12 +157,6 @@ const CreateQuestionForm = ({ onComplete }: { onComplete: () => void }) => {
 							<div key={item.id} className='mb-[10px] grid'>
 								<label className='flex items-center justify-between w-full mb-2'>
 									<span>{t('answer_question')}</span>{' '}
-									<span
-										onClick={() => remove(index)}
-										className='text-sm text-red-500 underline cursor-pointer'
-									>
-										{t('delete')}
-									</span>
 								</label>
 								<Controller
 									name={`answers.${index}.title`}
@@ -262,6 +189,7 @@ const CreateQuestionForm = ({ onComplete }: { onComplete: () => void }) => {
 													return (
 														<div>
 															<FileUploader
+																defaultFiles={answer.file_paths}
 																setFiles={files => field.onChange(files)}
 																onRightButtonHandler={() => remove(index)}
 															/>
@@ -276,19 +204,6 @@ const CreateQuestionForm = ({ onComplete }: { onComplete: () => void }) => {
 						)
 					)}
 				</RadioGroup>
-				<span
-					onClick={() => {
-						append({
-							title: '',
-							isCorrect: false,
-							video_url: '',
-							file_paths: [],
-						})
-					}}
-					className='mb-4 text-blue-500 underline cursor-pointer text-md'
-				>
-					{t('add_answer')}
-				</span>
 			</div>
 			{errors.answers && (
 				<p className='mt-1 text-sm text-red-500'>{errors.answers.message}</p>
@@ -297,10 +212,10 @@ const CreateQuestionForm = ({ onComplete }: { onComplete: () => void }) => {
 			<div className='w-full mt-4 mb-6 border-b border-b-gray-300' />
 
 			<Button className='mx-auto' type='submit' isLoading={isCreatingTest}>
-				{t('add')}
+				{t('update')}
 			</Button>
 		</form>
 	)
 }
 
-export default CreateQuestionForm
+export default UpdateOneAnswerForm

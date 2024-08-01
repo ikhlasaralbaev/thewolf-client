@@ -16,12 +16,14 @@ import { getAllTestsAction } from '@/features/tests/store/tests.actions'
 import { useAppDispatch, useAppSelector } from '@/hooks/store-hooks'
 import { FilterIcon } from 'lucide-react'
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { setResultFilter } from '../store/results.slice'
 
 const ResultsHeader = () => {
 	const { tests } = useAppSelector(state => state.tests)
 	const { language } = useAppSelector(state => state.results)
 	const dispatch = useAppDispatch()
+	const { t } = useTranslation()
 
 	useEffect(() => {
 		dispatch(getAllTestsAction({ lang: language }))
@@ -32,7 +34,7 @@ const ResultsHeader = () => {
 			<Popover>
 				<PopoverTrigger asChild>
 					<Button variant='outline'>
-						<FilterIcon /> Filter
+						<FilterIcon /> {t('filter')}
 					</Button>
 				</PopoverTrigger>
 				<PopoverContent className='w-80'>
@@ -47,13 +49,13 @@ const ResultsHeader = () => {
 							}
 						>
 							<SelectTrigger className='w-full'>
-								<SelectValue placeholder='Language' />
+								<SelectValue placeholder={t('language')} />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value={'all'}>All languages</SelectItem>
-								<SelectItem value={'uz'}>Uzbek</SelectItem>
-								<SelectItem value={'ru'}>Russian</SelectItem>
-								<SelectItem value={'en'}>English</SelectItem>
+								<SelectItem value={'all'}>{t('all_languages')}</SelectItem>
+								<SelectItem value={'uz'}>{t('uz')}</SelectItem>
+								<SelectItem value={'ru'}>{t('ru')}</SelectItem>
+								<SelectItem value={'en'}>{t('en')}</SelectItem>
 							</SelectContent>
 						</Select>
 						<Select
@@ -66,12 +68,12 @@ const ResultsHeader = () => {
 							}
 						>
 							<SelectTrigger className='w-full'>
-								<SelectValue placeholder='Status' />
+								<SelectValue placeholder={t('status')} />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value={'all'}>All status</SelectItem>
-								<SelectItem value={'1'}>Is passed</SelectItem>
-								<SelectItem value={'0'}>No passed</SelectItem>
+								<SelectItem value={'all'}>{t('all_statuses')}</SelectItem>
+								<SelectItem value={'1'}>{t('is_passed')}</SelectItem>
+								<SelectItem value={'0'}>{t('no_passed')}</SelectItem>
 							</SelectContent>
 						</Select>
 						<Select
@@ -84,10 +86,10 @@ const ResultsHeader = () => {
 							}
 						>
 							<SelectTrigger className='w-full'>
-								<SelectValue placeholder='Направление' />
+								<SelectValue placeholder={t('direction')} />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value={'all'}>All Направление</SelectItem>
+								<SelectItem value={'all'}>{t('all_directions')}</SelectItem>
 								{tests.map(item => (
 									<SelectItem value={String(item.id)}>{item.title}</SelectItem>
 								))}
@@ -106,7 +108,7 @@ const ResultsHeader = () => {
 								<SelectValue placeholder='Region' />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value={'all'}>All regions</SelectItem>
+								<SelectItem value={'all'}>{t('all_regions')}</SelectItem>
 								{regions.map(item => (
 									<SelectItem value={item.code}>{item.ru}</SelectItem>
 								))}

@@ -12,6 +12,7 @@ export const getDirectionsUrl = () => `/direction`
 export const getTestSteps = (test_id: string | number) =>
 	`/step?test=${test_id}`
 export const createStepUrl = () => `/step`
+export const updateStepUrl = (step: string | number) => `/step/${step}`
 
 // step questions
 export const getStepQuestionsUrl = (step_id: number | string) =>
@@ -30,3 +31,7 @@ export const updateAnswerUrl = (id: string | number) => `/answer/${id}`
 
 export const deleteQuestionUrl = (question: number | string) =>
 	`/question/${question}`
+
+export const deleteStepUrl = (question: number | string) => `/step/${question}`
+export const deleteTestUrl = (test: number | string) => `/test/${test}`
+export const deleteAnswerUrl = (answer: number | string) => `/answer/${answer}`
