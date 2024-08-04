@@ -1,3 +1,4 @@
+import { apiURL } from '@/api/api.interceptor'
 import { EditSvg } from '@/assets'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -11,7 +12,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { useAppDispatch } from '@/hooks/store-hooks'
-import { Trash } from 'lucide-react'
+import { FileWarningIcon, Trash } from 'lucide-react'
 import { FC, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -92,12 +93,22 @@ const QuestionItem: FC<Props> = ({ question }) => {
 						{question.file_paths.map(item => (
 							<img
 								className='h-[120px] w-[120px] bg-grayBg object-cover '
-								src={'http://localhost:8000' + item}
+								src={apiURL + item}
 							/>
 						))}
 					</div>
 				) : null}
 			</div>
+
+			{question.answers.find(item => item.isCorrect) ? null : (
+				<div className='flex gap-2 p-2 text-sm text-red-500 rounded-md bg-amber-100'>
+					<FileWarningIcon />
+					<span>
+						Bu savolda tog'ri javoblar yo'q, <br /> va shu sababdan kandidatga
+						ko'rsatilmaydi!
+					</span>
+				</div>
+			)}
 
 			<div className='w-full my-2 mb-4 border-t'></div>
 
@@ -144,7 +155,7 @@ const QuestionItem: FC<Props> = ({ question }) => {
 										{item.file_paths.map(item => (
 											<img
 												className='h-[100px] w-[120px] bg-grayBg object-cover '
-												src={'http://localhost:8000' + item}
+												src={apiURL + item}
 											/>
 										))}
 									</div>
@@ -192,7 +203,7 @@ const QuestionItem: FC<Props> = ({ question }) => {
 											<div className='relative'>
 												<img
 													className='h-[100px] bg-grayBg object-cover w-full'
-													src={'http://localhost:8000' + item}
+													src={apiURL + item}
 												/>
 											</div>
 										))}

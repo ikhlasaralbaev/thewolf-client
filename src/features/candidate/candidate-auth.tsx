@@ -1,3 +1,5 @@
+import { axiosBasic } from '@/api/api.interceptor'
+import { DatePickerDemo } from '@/components/common/date-picker'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -9,28 +11,35 @@ import {
 } from '@/components/ui/select'
 import { useAppDispatch, useAppSelector } from '@/hooks/store-hooks'
 import { yupResolver } from '@hookform/resolvers/yup'
+import moment from 'moment'
 import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import TailwindSelect from 'react-tailwindcss-select'
 import { getAllTestsAction } from '../tests/store/tests.actions'
-import { regions } from './lib/data'
+import { candidateKnownLanguages, regions } from './lib/data'
 import { candidateCreateValidator } from './lib/validator/candidate.validators'
 import { createCandidate } from './store/candidate.actions'
+import { backToRegister } from './store/candidate.slice'
+
 const CandidateAuth = () => {
 	const { isCreatingCandidate, candidate, test } = useAppSelector(
 		state => state.candidate
 	)
+	const data = useAppSelector(state => state.candidate)
 	const [testLanguage, setTestLanguage] = useState('uz')
 	const { tests } = useAppSelector(state => state.tests)
 	const navigate = useNavigate()
 	const { t, i18n } = useTranslation()
+	const [resumeFile, setResumeFile] = useState<File | null>(null)
 
 	const {
 		control,
 		handleSubmit,
 		formState: { errors },
+		setValue,
 	} = useForm({
 		resolver: yupResolver(candidateCreateValidator),
 	})
@@ -38,8 +47,17 @@ const CandidateAuth = () => {
 	const dispatch = useAppDispatch()
 
 	const onSubmit = (data: any) => {
+		dispatch(backToRegister())
+		console.log(data)
 		dispatch(
-			createCandidate({ data: { ...data, test: Number(data.direction) } })
+			createCandidate({
+				data: {
+					...data,
+					test: Number(data.direction),
+					birthdate: moment(data.birthdate).format('DD.MM.YYYY'),
+					languages: data.languages?.map((item: any) => item.value),
+				},
+			})
 		)
 			.then(res => {
 				if (res.type === 'candidate/craete/fulfilled') {
@@ -62,6 +80,19 @@ const CandidateAuth = () => {
 			navigate('/tests', { replace: true })
 		}
 	}, [test, candidate])
+
+	useEffect(() => {
+		const uploadFile = async () => {
+			if (resumeFile) {
+				const formData = new FormData()
+				formData.append('files', resumeFile)
+				const res = await axiosBasic.post(`/file/upload`, formData)
+				setValue('resumeUrl', res.data[0]?.url)
+			}
+		}
+
+		uploadFile()
+	}, [resumeFile])
 
 	return (
 		<form onSubmit={handleSubmit(onSubmit)}>
@@ -103,12 +134,9 @@ const CandidateAuth = () => {
 						name='birthdate'
 						control={control}
 						render={({ field }) => (
-							<Input
-								className={`border w-full ${
-									errors.birthdate ? 'border-red-500' : ''
-								}`}
-								type='date'
-								{...field}
+							<DatePickerDemo
+								setDate={date => field.onChange(date)}
+								date={field.value}
 							/>
 						)}
 					/>
@@ -165,6 +193,33 @@ const CandidateAuth = () => {
 							<Input
 								className={`border ${errors.lastJob ? 'border-red-500' : ''}`}
 								{...field}
+							/>
+						)}
+					/>
+				</div>
+				<div className='grid mb-[10px] '>
+					<label className='mb-2'>{t('knowed_languages')}</label>
+					<Controller
+						name='languages'
+						control={control}
+						render={({ field }: any) => (
+							<TailwindSelect
+								isMultiple
+								onChange={(lang: any) => {
+									field.onChange(lang)
+									console.log(lang)
+								}}
+								options={candidateKnownLanguages.map(item => ({
+									value: item.language,
+									label:
+										i18n.language === 'ru'
+											? item.ru
+											: i18n.language === 'uz'
+											? item.uz
+											: item.en,
+								}))}
+								value={field.value}
+								primaryColor=''
 							/>
 						)}
 					/>
@@ -244,6 +299,20 @@ const CandidateAuth = () => {
 									<SelectItem value={'exp-3+'}>{t('exp-3+')}</SelectItem>
 								</SelectContent>
 							</Select>
+						)}
+					/>
+				</div>
+
+				<div className='grid '>
+					<label className='mb-2'>{t('resume')}:</label>
+					<Controller
+						name='resumeUrl'
+						control={control}
+						render={({ field }) => (
+							<Input
+								type='file'
+								onChange={(e: any) => setResumeFile(e?.target?.files[0])!}
+							/>
 						)}
 					/>
 				</div>

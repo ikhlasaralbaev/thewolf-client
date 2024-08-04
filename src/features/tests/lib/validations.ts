@@ -1,13 +1,15 @@
 import * as yup from 'yup'
 
 export const createTestValidator = yup.object({
-	title: yup.string(),
-	language: yup.string(),
+	title: yup.string().required(),
+	language: yup.string().required(),
 })
 
 export const createStepValidator = yup.object({
 	title: yup.string().required(),
-	minPercent: yup.number().required(),
+	minPercent: yup.number().required().max(100, 'max_value_100'),
+	minute: yup.number().required(),
+	showTestsCount: yup.number().required(),
 })
 
 export const createQuestionValidator = yup.object({
@@ -16,13 +18,19 @@ export const createQuestionValidator = yup.object({
 	video_url: yup.string(),
 	file_paths: yup.array(yup.string()),
 	answers: yup
-		.array(
-			yup.object({
-				title: yup.string().required(),
+		.array()
+		.of(
+			yup.object().shape({
+				title: yup.string().required('Title is required'),
+				isCorrect: yup.boolean(),
 				video_url: yup.string(),
 				file_paths: yup.array(yup.string()),
-				isCorrect: yup.boolean(),
 			})
+		)
+		.test(
+			'at-least-one-true',
+			'At least one answer must be correct',
+			(answers: any) => answers.some((answer: any) => answer.isCorrect)
 		)
 		.min(2),
 })

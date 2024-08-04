@@ -90,3 +90,126 @@ export const regions = [
 		en: 'Other',
 	},
 ]
+
+export const candidateKnownLanguages = [
+	{
+		language: 'en',
+		ru: 'Английский',
+		en: 'English',
+		uz: 'Ingliz tili',
+	},
+	{
+		language: 'ru',
+		ru: 'Русский',
+		en: 'Russian',
+		uz: 'Rus tili',
+	},
+	{
+		language: 'uz',
+		ru: 'Узбекский',
+		en: 'Uzbek',
+		uz: "O'zbek tili",
+	},
+	{
+		language: 'kz',
+		ru: 'Казахский',
+		en: 'Kazakh',
+		uz: 'Qozoq tili',
+	},
+	{
+		language: 'it',
+		ru: 'Итальянский',
+		en: 'Italian',
+		uz: 'Italyan tili',
+	},
+	{
+		language: 'fr',
+		ru: 'Французский',
+		en: 'French',
+		uz: 'Fransuz tili',
+	},
+	{
+		language: 'zh',
+		ru: 'Китайский',
+		en: 'Chinese',
+		uz: 'Xitoy tili',
+	},
+	{
+		language: 'ko',
+		ru: 'Корейский',
+		en: 'Korean',
+		uz: 'Koreys tili',
+	},
+	{
+		language: 'es',
+		ru: 'Испанский',
+		en: 'Spanish',
+		uz: 'Ispan tili',
+	},
+	{
+		language: 'de',
+		ru: 'Немецкий',
+		en: 'German',
+		uz: 'Nemis tili',
+	},
+	{
+		language: 'ja',
+		ru: 'Японский',
+		en: 'Japanese',
+		uz: 'Yapon tili',
+	},
+	{
+		language: 'ar',
+		ru: 'Арабский',
+		en: 'Arabic',
+		uz: 'Arab tili',
+	},
+	{
+		language: 'pt',
+		ru: 'Португальский',
+		en: 'Portuguese',
+		uz: 'Portugal tili',
+	},
+	{
+		language: 'hi',
+		ru: 'Хинди',
+		en: 'Hindi',
+		uz: 'Hind tili',
+	},
+	{
+		language: 'tr',
+		ru: 'Турецкий',
+		en: 'Turkish',
+		uz: 'Turk tili',
+	},
+	{
+		language: 'pl',
+		ru: 'Польский',
+		en: 'Polish',
+		uz: 'Polsha tili',
+	},
+	{
+		language: 'uk',
+		ru: 'Украинский',
+		en: 'Ukrainian',
+		uz: 'Ukraina tili',
+	},
+	{
+		language: 'fa',
+		ru: 'Персидский',
+		en: 'Persian',
+		uz: 'Fors tili',
+	},
+	{
+		language: 'el',
+		ru: 'Греческий',
+		en: 'Greek',
+		uz: 'Gretsiya tili',
+	},
+	{
+		language: 'nl',
+		ru: 'Голландский',
+		en: 'Dutch',
+		uz: 'Gollandiya tili',
+	},
+]

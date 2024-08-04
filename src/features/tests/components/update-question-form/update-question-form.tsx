@@ -28,7 +28,7 @@ const UpdateQuestionForm = ({
 }) => {
 	const { isCreatingTest } = useAppSelector(state => state.tests)
 	const params = useParams()
-	const [isMultipleAnswers, setIsMultipleAnswers] = useState(true)
+	const [_, setIsMultipleAnswers] = useState(true)
 	const { t } = useTranslation()
 	console.log(question)
 

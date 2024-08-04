@@ -88,7 +88,7 @@
 	"end_test": "Finish testing",
 	"good": "Excellent!",
 	"all_answers_checked": "You have successfully completed all stages",
-	"connect_me": "For further stages, contact HR on Telegram",
+	"connect_me": "HR will be in touch with you shortly.",
 	"connect": "Contact",
 	"next_step_title": "You have successfully passed the {{ currentStep }} stages",
 	"next_step_descr": "Click Continue to move to the next stage",
@@ -103,5 +103,22 @@
 	"answer_created": "Answer created successful!",
 	"want_delete_answer": "Do you want delete anwser?",
 
-	"login_or_password_error": "Login or password is incorrect!"
+	"login_or_password_error": "Login or password is incorrect!",
+	"test_created": "Test created successfully!",
+	"enter_step_minute": "Enter step minute:",
+	"minute": "Minute",
+	"tests_not_found_please_contact_me": "Tests not found, please contact me!",
+	"date_of_created_result": "Date of result created:",
+	"please_select_one_answer": "Please select one correct answer!",
+	"enter_show_tests_count": "Enter show tests count:",
+	"show_tests_count": "Show tests count",
+	"knowed_languages": "Languages ​​you know:",
+	"download_resume": "Download resume",
+	"languages": "Languages",
+	"resume": "Resume",
+	"employees": "Employee",
+	"password": "Password",
+	"want_update_employee": "Update employee",
+	"add_employee": "Add employee",
+	"want_delete_employee": "Do you want delete employee?"
 }

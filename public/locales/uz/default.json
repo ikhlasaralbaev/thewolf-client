@@ -90,7 +90,7 @@
 	"end_test": "Testni yakunlash",
 	"good": "Ajoyib!",
 	"all_answers_checked": "Siz barcha bosqichlardan muvaffaqiyatli o'tdingiz",
-	"connect_me": "Keyingi bosqichlar uchun, HR bilan Telegram orqali bog'laning",
+	"connect_me": "Tez orada HR siz bilan bog'lanadi.",
 	"connect": "Bog'lanish",
 	"next_step_title": "Siz {{ currentStep }} bosqichlarni muvaffaqiyatli o'tdingiz",
 	"next_step_descr": "Yangi bosqichga o'tish uchun Davom etishni bosing",
@@ -103,5 +103,23 @@
 	"answer_created": "Javob muvaffaqiyatli yaratildi!",
 	"want_delete_answer": "Javobni o'chirmoqchimisiz?",
 
-	"login_or_password_error": "Login yoki parol noto‘g‘ri!"
+	"login_or_password_error": "Login yoki parol noto‘g‘ri!",
+	"test_created": "Test muvaffaqiyatli yaratildi!",
+	"enter_step_minute": "Qadam minutini kiriting:",
+	"minute": "Daqiqa",
+	"tests_not_found_please_contact_me": "Testlar topilmadi, iltimos keyinroq urinib ko'ring!",
+	"date_of_created_result": "Test topshirilgan vaqt",
+	"please_select_one_answer": "Iltimos, bitta to‘g‘ri javobni tanlang!",
+	"enter_show_tests_count": "Testlar sonini kiriting:",
+	"show_tests_count": "Ko'rinadigan testlar soni",
+	"knowed_languages": "Biladigan tillaringiz:",
+	"download_resume": "Resumeni yuklab olish",
+	"languages": "Tillar",
+	"resume": "Resyume",
+	"employees": "Xodimlar",
+	"password": "Parol",
+	"want_update_employee": "Xodimni tahrirlash",
+	"add_employee": "Xodim yaratish",
+
+	"want_delete_employee": "Xodimni o'chirib tashlamoqchimisiz?"
 }

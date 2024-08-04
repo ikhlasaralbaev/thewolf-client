@@ -1,3 +1,5 @@
+import { IQuestion } from '@/features/tests/types'
+
 export interface ICandidate {
 	fullName: string
 	phone: string
@@ -26,13 +28,15 @@ export interface IStep {
 	id: number
 	title: string
 	minPercent: number
-	questions: any[]
+	questions: IQuestion[]
+	minute: number
 }
 
 export interface ICompleteStepRequest {
 	step_id: number
 	candidate_id: number
-	answers: Answer[]
+	answers: any[]
+	isTimeout?: boolean
 }
 
 export interface Answer {

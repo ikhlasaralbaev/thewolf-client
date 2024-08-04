@@ -1,3 +1,4 @@
+import { apiURL } from '@/api/api.interceptor'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
@@ -58,7 +59,7 @@ const QuestionItem: FC<Props> = ({ question, index }) => {
 					{question.file_paths.map(item => (
 						<img
 							className='h-[120px] w-full bg-grayBg object-contain '
-							src={'http://localhost:8000' + item}
+							src={apiURL + item}
 						/>
 					))}
 				</div>
@@ -80,7 +81,7 @@ const QuestionItem: FC<Props> = ({ question, index }) => {
 											{item.file_paths.map(item => (
 												<img
 													className='h-[100px] w-[120px] bg-grayBg object-cover '
-													src={'http://localhost:8000' + item}
+													src={apiURL + item}
 												/>
 											))}
 										</div>
@@ -137,7 +138,7 @@ const QuestionItem: FC<Props> = ({ question, index }) => {
 											{item.file_paths.map(item => (
 												<img
 													className='h-[100px] w-[120px] bg-grayBg object-cover '
-													src={'http://localhost:8000' + item}
+													src={apiURL + item}
 												/>
 											))}
 										</div>

@@ -49,6 +49,8 @@ const UpdateStepForm = ({
 		reset({
 			title: initialData?.title,
 			minPercent: initialData.minPercent,
+			minute: initialData?.minute,
+			showTestsCount: initialData?.showTestsCount,
 		})
 	}, [initialData])
 
@@ -78,6 +80,38 @@ const UpdateStepForm = ({
 				{errors.minPercent && (
 					<p className='mt-1 text-sm text-red-500'>
 						{errors.minPercent.message}
+					</p>
+				)}
+			</div>
+
+			<div className='mb-[20px] grid'>
+				<label className='mb-2'>{t('minute')}</label>
+				<Controller
+					name='minute'
+					control={control}
+					render={({ field }) => (
+						<Input placeholder={t('minute')} type='number' {...field} />
+					)}
+				/>
+				{errors.minPercent && (
+					<p className='mt-1 text-sm text-red-500'>
+						{errors.minPercent.message}
+					</p>
+				)}
+			</div>
+
+			<div className='mb-[20px] grid'>
+				<label className='mb-2'>{t('enter_show_tests_count')}</label>
+				<Controller
+					name='showTestsCount'
+					control={control}
+					render={({ field }) => (
+						<Input placeholder={t('minute')} type='number' {...field} />
+					)}
+				/>
+				{errors.showTestsCount && (
+					<p className='mt-1 text-sm text-red-500'>
+						{errors.showTestsCount?.message}
 					</p>
 				)}
 			</div>

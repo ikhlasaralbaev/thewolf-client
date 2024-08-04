@@ -42,25 +42,7 @@ const TestsPageHeader = () => {
 	return (
 		<div className='relative flex items-center justify-between w-full'>
 			<div className='relative w-full pb-5 border-gray-200 sm:pb-0'>
-				<div className='z-10 md:flex md:items-center md:justify-between'>
-					<div className='flex gap-2 pb-2 mt-3 bg-white sm:flex-col md:flex-row md:absolute md:right-0 md:top-3 md:mt-0 '>
-						{selectedTestId && (
-							<span
-								onClick={() => setDialog(true)}
-								className='inline-flex items-center px-3 py-2 text-sm font-light text-red-500 underline cursor-pointer'
-							>
-								{t('delete')}
-							</span>
-						)}
-						<Button
-							type='button'
-							onClick={() => setCreateTestModalIsOpen(true)}
-						>
-							{t('create_test')}
-						</Button>
-					</div>
-				</div>
-				<div className='mt-4 overflow-x-auto scrollbar-hide'>
+				<div className='mt-4 '>
 					<div className='sm:hidden'>
 						<label htmlFor='current-tab' className='sr-only'>
 							{t('select')}
@@ -83,7 +65,7 @@ const TestsPageHeader = () => {
 						</select>
 					</div>
 					<div className='hidden sm:block'>
-						<nav className='flex -mb-px space-x-8'>
+						<nav className='flex -mb-px space-x-8 overflow-x-auto scrollbar-hide xs:w-full lg:w-[75%]'>
 							{tests.map(tab => (
 								<button
 									key={tab.id}
@@ -104,6 +86,25 @@ const TestsPageHeader = () => {
 								</button>
 							))}
 						</nav>
+					</div>
+				</div>
+
+				<div className='z-10 md:flex md:items-center md:justify-between'>
+					<div className='flex gap-2 pb-2 mt-3 bg-white sm:flex-col md:flex-row md:absolute md:right-0 md:top-3 md:mt-0 '>
+						{selectedTestId && (
+							<span
+								onClick={() => setDialog(true)}
+								className='inline-flex items-center px-3 py-2 text-sm font-light text-red-500 underline cursor-pointer'
+							>
+								{t('delete')}
+							</span>
+						)}
+						<Button
+							type='button'
+							onClick={() => setCreateTestModalIsOpen(true)}
+						>
+							{t('create_test')}
+						</Button>
 					</div>
 				</div>
 			</div>

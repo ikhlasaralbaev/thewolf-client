@@ -22,7 +22,7 @@ import {
 } from '@headlessui/react'
 import { Bars3Icon, UsersIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { GridIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons'
-import { LogOut } from 'lucide-react'
+import { LogOut, UserCircle } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, Outlet, useLocation } from 'react-router-dom'
@@ -33,6 +33,12 @@ const navigation = [
 		name: 'results',
 		href: '/admin/candidates',
 		icon: UsersIcon,
+		current: false,
+	},
+	{
+		name: 'employees',
+		href: '/admin/employees',
+		icon: UserCircle,
 		current: false,
 	},
 ]

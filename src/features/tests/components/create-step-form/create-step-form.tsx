@@ -19,6 +19,10 @@ const CreateStepForm = ({ onComplete }: { onComplete: () => void }) => {
 		formState: { errors },
 	} = useForm({
 		resolver: yupResolver(createStepValidator),
+		defaultValues: {
+			minute: 60,
+			showTestsCount: 15,
+		},
 	})
 
 	const dispatch = useAppDispatch()
@@ -57,12 +61,40 @@ const CreateStepForm = ({ onComplete }: { onComplete: () => void }) => {
 				<Controller
 					name='minPercent'
 					control={control}
-					render={({ field }) => <Input type='number' {...field} />}
+					render={({ field }) => <Input max={100} type='number' {...field} />}
 				/>
 				{errors.minPercent && (
 					<p className='mt-1 text-sm text-red-500'>
 						{errors.minPercent.message}
 					</p>
+				)}
+			</div>
+
+			<div className='mb-[20px] grid'>
+				<label className='mb-2'>{t('enter_step_minute')}</label>
+				<Controller
+					name='minute'
+					control={control}
+					render={({ field }) => (
+						<Input defaultValue={60} type='number' {...field} />
+					)}
+				/>
+				{errors.minPercent && (
+					<p className='mt-1 text-sm text-red-500'>{errors.minute?.message}</p>
+				)}
+			</div>
+
+			<div className='mb-[20px] grid'>
+				<label className='mb-2'>{t('enter_show_tests_count')}</label>
+				<Controller
+					name='showTestsCount'
+					control={control}
+					render={({ field }) => (
+						<Input defaultValue={15} type='number' {...field} />
+					)}
+				/>
+				{errors.minPercent && (
+					<p className='mt-1 text-sm text-red-500'>{errors.minute?.message}</p>
 				)}
 			</div>
 

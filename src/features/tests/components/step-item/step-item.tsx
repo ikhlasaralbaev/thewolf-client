@@ -47,14 +47,21 @@ const StepItem: FC<Props> = ({ step }) => {
 			onClick={() => {
 				navigation(`/admin/step-tests/${step.id}`, { replace: true })
 			}}
-			className='bg-stepBg px-3 py-[14px] flex items-center justify-between rounded-[8px] cursor-pointer'
+			className='bg-stepBg px-3 py-[14px] flex items-start justify-between rounded-[8px] cursor-pointer'
 		>
-			<div>
+			<div className='grid w-full'>
 				<h2 className='text-gray-500 text-[16px] font-semibold'>
 					{step.title}
 				</h2>
+				<div className='w-full my-2 border-t border-t-gray-200' />
 				<span className='text-primary text-[14px] font-semibold'>
 					{t('min')} {step.minPercent}%
+				</span>
+				<span className='text-primary text-[14px] font-semibold'>
+					{t('minute')}: {step.minute}
+				</span>
+				<span className='text-primary text-[14px] font-semibold'>
+					{t('show_tests_count')}: {step.showTestsCount}
 				</span>
 			</div>
 

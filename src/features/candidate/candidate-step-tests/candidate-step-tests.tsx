@@ -1,11 +1,15 @@
+import { telegramUrl } from '@/api/api.interceptor'
+import { TelegramSvg } from '@/assets'
 import { Button } from '@/components/ui/button'
 import { useAppDispatch, useAppSelector } from '@/hooks/store-hooks'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import CountdownTimer from '../components/countdown'
 import QuestionItem from '../components/question-item'
 import { completeStepAction, createResult } from '../store/candidate.actions'
+import { backToRegister } from '../store/candidate.slice'
 import { ICreateResult } from '../types'
 
 const CandidateStepTestsPageComponent = () => {
@@ -15,6 +19,7 @@ const CandidateStepTestsPageComponent = () => {
 		currentStep: currentStepIndex,
 		answers,
 		stepResults,
+		isCreatingCandidate,
 	} = useAppSelector(state => state.candidate)
 
 	const [currentStep, setCurrentStep] = useState(
@@ -32,16 +37,21 @@ const CandidateStepTestsPageComponent = () => {
 		}
 	}, [currentStepIndex])
 
-	const handleCompleteStep = () => {
+	useEffect(() => {
+		if (!candidate && !isCreatingCandidate) {
+			navigate('/', { replace: true })
+			dispatch(backToRegister())
+		}
+	}, [candidate, isCreatingCandidate])
+
+	const handleCompleteStep = (isTimeout?: boolean) => {
 		if (currentStep?.questions.length === answers.length) {
 			dispatch(
 				completeStepAction({
 					step_id: currentStep?.id!,
 					candidate_id: candidate?.id!,
-					answers: answers.map(item => ({
-						question_id: +item.question_id!,
-						answers: item.answers.map(item => Number(item)),
-					})),
+					isTimeout: isTimeout!,
+					answers: answers!,
 				})
 			).then((res: any) => {
 				if (res.type === 'candidate/complete-step/fulfilled') {
@@ -154,22 +164,40 @@ const CandidateStepTestsPageComponent = () => {
 
 	return (
 		<div>
-			<div className='flex flex-col items-center justify-center mt-5 mb-[45px]'>
-				<h1 className='font-bold text-[20px]'>
-					{currentStepIndex! + 1} - {t('step')}
-				</h1>
-				<span>{currentStep?.title}</span>
-			</div>
+			{test?.steps?.length && currentStep?.questions.length ? (
+				<>
+					<div className='flex flex-col items-center justify-center mt-5 mb-[45px]'>
+						<h1 className='font-bold text-[20px]'>
+							{currentStepIndex! + 1} - {t('step')}
+						</h1>
+						<span>{currentStep?.title}</span>
+						<CountdownTimer
+							onComplete={handleCompleteStep}
+							initialMinutes={currentStep.minute}
+						/>
+					</div>
 
-			{currentStep?.questions.map((item, index) => (
-				<QuestionItem question={item} index={index} key={item.id} />
-			))}
+					{currentStep?.questions.map((item, index) => (
+						<QuestionItem question={item} index={index} key={item.id} />
+					))}
 
-			<div className='flex justify-center mt-12 mb-24'>
-				<Button className='mx-auto' onClick={handleCompleteStep}>
-					{t('check_result')}
-				</Button>
-			</div>
+					<div className='flex justify-center mt-12 mb-24'>
+						<Button className='mx-auto' onClick={() => handleCompleteStep()}>
+							{t('check_result')}
+						</Button>
+					</div>
+				</>
+			) : (
+				<div className='flex flex-col items-center justify-center gap-4 py-12 mt-2 bg-gray-100 rounded-md'>
+					<h1 className='text-xl'>{t('tests_not_found_please_contact_me')}</h1>
+
+					<a target='_blank' href={telegramUrl}>
+						<Button>
+							{t('connect')} <img src={TelegramSvg} />
+						</Button>
+					</a>
+				</div>
+			)}
 		</div>
 	)
 }

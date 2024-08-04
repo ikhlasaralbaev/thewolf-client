@@ -1,4 +1,4 @@
-import axiosInstance from '@/api/api.interceptor'
+import axiosInstance, { apiURL } from '@/api/api.interceptor'
 import { UploadSvg } from '@/assets'
 import { Input } from '@/components/ui/input'
 import { X } from 'lucide-react'
@@ -104,7 +104,7 @@ const FileUploader: FC<Props> = ({
 							<div className='relative'>
 								<img
 									className='h-[100px] bg-grayBg object-cover w-full'
-									src={'http://localhost:8000' + item}
+									src={apiURL + item}
 								/>
 
 								<button

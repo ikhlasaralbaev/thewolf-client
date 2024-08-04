@@ -18,6 +18,9 @@ export interface Candidate {
 	district: string
 	lastJob: string
 	experience: number
+
+	languages: string[]
+	resumeUrl: string
 }
 
 export interface Test {

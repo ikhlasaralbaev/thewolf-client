@@ -88,6 +88,12 @@ const CreateQuestionForm = ({ onComplete }: { onComplete: () => void }) => {
 		})
 	}, [isMultipleAnswers])
 
+	useEffect(() => {
+		if (errors.answers?.root) {
+			toast.error(t('please_select_one_answer'))
+		}
+	}, [errors])
+
 	return (
 		<form className='grid' onSubmit={handleSubmit(onSubmit)}>
 			<div className='mb-[20px] grid'>

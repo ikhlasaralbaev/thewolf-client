@@ -46,6 +46,7 @@ export const candidateSlice = createSlice({
 			state.candidate = null
 			state.test = null
 			state.currentStep = null
+			state.answers = []
 		},
 		setStep: (state, action) => {
 			state.currentStep = action.payload

@@ -12,15 +12,13 @@ interface IInitialState {
 	area?: string
 	totalPages: number
 	resultsPage: 1
+	filter: { language: string; isPassed: string; test: string; area: string }
 }
 
 const initialState: IInitialState = {
 	results: [],
 	isLoadingResults: false,
-	language: '',
-	isPassed: '',
-	test: '',
-	area: '',
+	filter: { language: '', isPassed: '', test: '', area: '' },
 	totalPages: 1,
 	resultsPage: 1,
 }
@@ -40,10 +38,8 @@ export const resultSlice = createSlice({
 				area?: string
 			}>
 		) => {
-			state.area = payload.area === 'all' ? '' : payload.area
-			state.language = payload.language === 'all' ? '' : payload.language
-			state.isPassed = payload.isPassed === 'all' ? '' : payload.isPassed
-			state.test = payload.test === 'all' ? '' : payload.test
+			state.filter = { ...state.filter, ...payload }
+			console.log(payload)
 		},
 		setResultsPage: (state, action) => {
 			state.resultsPage = action.payload

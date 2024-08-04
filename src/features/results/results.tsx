@@ -12,12 +12,9 @@ const Results = () => {
 	const {
 		results,
 		isLoadingResults,
-		area,
-		language,
-		test,
-		isPassed,
 		totalPages,
 		resultsPage: page,
+		filter,
 	} = useAppSelector(state => state.results)
 	const dispatch = useAppDispatch()
 	const { t } = useTranslation()
@@ -25,17 +22,17 @@ const Results = () => {
 	useEffect(() => {
 		dispatch(
 			getAllResults({
-				area,
-				language,
-				isPassed,
-				test,
+				area: filter.area === 'all' ? '' : filter.area,
+				language: filter.language === 'all' ? '' : filter.language,
+				isPassed: filter.isPassed === 'all' ? '' : filter.isPassed,
+				test: filter.test === 'all' ? '' : filter.test,
 				page,
 			})
 		)
-	}, [area, language, isPassed, test, page])
+	}, [filter, page])
 
 	return (
-		<AdminContentLayout title='Тесты' isBack={false}>
+		<AdminContentLayout title={t('results')} isBack={false}>
 			<div className='relative h-full'>
 				<ResultsHeader />
 				{isLoadingResults ? (

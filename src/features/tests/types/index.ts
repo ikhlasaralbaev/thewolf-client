@@ -32,6 +32,8 @@ export interface IStep {
 	id: number
 	title: string
 	minPercent: number
+	minute: number
+	showTestsCount: number
 }
 
 export interface IQuestion {
