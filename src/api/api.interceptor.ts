@@ -1,11 +1,11 @@
 import { ACCESS_TOKEN_KEY } from '@/config/constants'
 import axios from 'axios'
 
-export const baseURL = 'http://localhost:8000/api'
-export const apiURL = 'http://localhost:8000'
+// export const baseURL = 'http://localhost:8000/api'
+// export const apiURL = 'http://localhost:8000'
 export const telegramUrl = 'https://t.me/telegram'
-// export const baseURL = 'https://recruiting.thewolfsa.com/api'
-// export const apiURL = 'https://recruiting.thewolfsa.com'
+export const baseURL = 'https://recruiting.thewolfsa.com/api'
+export const apiURL = 'https://recruiting.thewolfsa.com'
 
 // Create an Axios instance
 const axiosInstance = axios.create({

@@ -28,7 +28,6 @@ const CandidateAuth = () => {
 	const { isCreatingCandidate, candidate, test } = useAppSelector(
 		state => state.candidate
 	)
-	const data = useAppSelector(state => state.candidate)
 	const [testLanguage, setTestLanguage] = useState('uz')
 	const { tests } = useAppSelector(state => state.tests)
 	const navigate = useNavigate()
@@ -308,7 +307,7 @@ const CandidateAuth = () => {
 					<Controller
 						name='resumeUrl'
 						control={control}
-						render={({ field }) => (
+						render={({}) => (
 							<Input
 								type='file'
 								onChange={(e: any) => setResumeFile(e?.target?.files[0])!}
