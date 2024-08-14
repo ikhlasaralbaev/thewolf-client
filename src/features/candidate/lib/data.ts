@@ -1,5 +1,11 @@
 export const regions = [
 	{
+		code: 'TK',
+		uz: 'Toshkent',
+		ru: 'Ташкент',
+		en: 'Tashkent',
+	},
+	{
 		code: 'AN',
 		uz: 'Andijon',
 		ru: 'Андижан',
@@ -71,12 +77,7 @@ export const regions = [
 		ru: 'Ташкентская область',
 		en: 'Tashkent Region',
 	},
-	{
-		code: 'TK',
-		uz: 'Toshkent',
-		ru: 'Ташкент',
-		en: 'Tashkent',
-	},
+
 	{
 		code: 'XO',
 		uz: 'Xorazm',

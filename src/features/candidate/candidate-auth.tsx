@@ -1,4 +1,3 @@
-import { axiosBasic } from '@/api/api.interceptor'
 import { DatePickerDemo } from '@/components/common/date-picker'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -32,13 +31,11 @@ const CandidateAuth = () => {
 	const { tests } = useAppSelector(state => state.tests)
 	const navigate = useNavigate()
 	const { t, i18n } = useTranslation()
-	const [resumeFile, setResumeFile] = useState<File | null>(null)
 
 	const {
 		control,
 		handleSubmit,
 		formState: { errors },
-		setValue,
 	} = useForm({
 		resolver: yupResolver(candidateCreateValidator),
 	})
@@ -80,19 +77,6 @@ const CandidateAuth = () => {
 		}
 	}, [test, candidate])
 
-	useEffect(() => {
-		const uploadFile = async () => {
-			if (resumeFile) {
-				const formData = new FormData()
-				formData.append('files', resumeFile)
-				const res = await axiosBasic.post(`/file/upload`, formData)
-				setValue('resumeUrl', res.data[0]?.url)
-			}
-		}
-
-		uploadFile()
-	}, [resumeFile])
-
 	return (
 		<form onSubmit={handleSubmit(onSubmit)}>
 			<div className='flex flex-col items-center justify-center my-[20px]'>
@@ -101,34 +85,29 @@ const CandidateAuth = () => {
 			</div>
 			<div className='grid xs:grid-cols-1 md:grid-cols-2 gap-x-4 '>
 				<div className='mb-[10px] grid'>
-					<label className='mb-2'>{t('fio')}</label>
+					<label className={`mb-2 ${errors.fullName ? 'text-red-500' : ''}`}>
+						{t('fio')}*
+					</label>
 					<Controller
 						name='fullName'
 						control={control}
-						render={({ field }) => (
-							<Input
-								className={`border ${errors.fullName ? 'border-red-500' : ''}`}
-								{...field}
-							/>
-						)}
+						render={({ field }) => <Input {...field} />}
 					/>
 				</div>
 				<div className='mb-[10px] grid'>
-					<label className='mb-2'>{t('phone')}</label>
+					<label className={`mb-2 ${errors.phone ? 'text-red-500' : ''}`}>
+						{t('phone')}*
+					</label>
 					<Controller
 						name='phone'
 						control={control}
-						render={({ field }) => (
-							<Input
-								className={`border ${errors.phone ? 'border-red-500' : ''}`}
-								defaultValue={'+998'}
-								{...field}
-							/>
-						)}
+						render={({ field }) => <Input defaultValue={'+998'} {...field} />}
 					/>
 				</div>
 				<div className='mb-[10px] grid'>
-					<label className='mb-2'>{t('birthdate')}</label>
+					<label className={`mb-2 ${errors.birthdate ? 'text-red-500' : ''}`}>
+						{t('birthdate')}*
+					</label>
 					<Controller
 						name='birthdate'
 						control={control}
@@ -141,7 +120,9 @@ const CandidateAuth = () => {
 					/>
 				</div>
 				<div className='mb-[10px] grid'>
-					<label className='mb-2'>{t('region')}</label>
+					<label className={`mb-2 ${errors.area ? 'text-red-500' : ''}`}>
+						{t('region')}*
+					</label>
 					<Controller
 						name='area'
 						control={control}
@@ -171,33 +152,50 @@ const CandidateAuth = () => {
 					/>
 				</div>
 				<div className='mb-[10px] grid'>
-					<label className='mb-2'>{t('district')}</label>
+					<label className={`mb-2 ${errors.district ? 'text-red-500' : ''}`}>
+						{t('district')}*
+					</label>
 					<Controller
 						name='district'
 						control={control}
-						render={({ field }) => (
-							<Input
-								className={`border ${errors.district ? 'border-red-500' : ''}`}
-								{...field}
-							/>
-						)}
+						render={({ field }) => <Input {...field} />}
 					/>
 				</div>
 				<div className='mb-[10px] grid'>
-					<label className='mb-2'>{t('lastJob')}</label>
+					<label className={`mb-2 ${errors.lastJob ? 'text-red-500' : ''}`}>
+						{t('lastJob')}*
+					</label>
 					<Controller
 						name='lastJob'
 						control={control}
-						render={({ field }) => (
-							<Input
-								className={`border ${errors.lastJob ? 'border-red-500' : ''}`}
-								{...field}
-							/>
-						)}
+						render={({ field }) => <Input {...field} />}
 					/>
 				</div>
+
+				<div className='mb-[10px] grid'>
+					<label className='mb-2'>{t('language')}*</label>
+
+					<Select
+						value={testLanguage}
+						onValueChange={lang => {
+							setTestLanguage(lang)
+							console.log(lang)
+						}}
+					>
+						<SelectTrigger className='w-full'>
+							<SelectValue placeholder={t('language') + ':'} />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value={'uz'}>{t('uz')}</SelectItem>
+							<SelectItem value={'ru'}>{t('ru')}</SelectItem>
+							<SelectItem value={'en'}>{t('en')}</SelectItem>
+						</SelectContent>
+					</Select>
+				</div>
 				<div className='grid mb-[10px] '>
-					<label className='mb-2'>{t('knowed_languages')}</label>
+					<label className={`mb-2 ${errors.languages ? 'text-red-500' : ''}`}>
+						{t('knowed_languages')}*
+					</label>
 					<Controller
 						name='languages'
 						control={control}
@@ -224,27 +222,9 @@ const CandidateAuth = () => {
 					/>
 				</div>
 				<div className='mb-[10px] grid'>
-					<label className='mb-2'>{t('language')}</label>
-
-					<Select
-						value={testLanguage}
-						onValueChange={lang => {
-							setTestLanguage(lang)
-							console.log(lang)
-						}}
-					>
-						<SelectTrigger className='w-full'>
-							<SelectValue placeholder={t('language') + ':'} />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value={'uz'}>{t('uz')}</SelectItem>
-							<SelectItem value={'ru'}>{t('ru')}</SelectItem>
-							<SelectItem value={'en'}>{t('en')}</SelectItem>
-						</SelectContent>
-					</Select>
-				</div>
-				<div className='mb-[10px] grid'>
-					<label className='mb-2'>{t('direction')}</label>
+					<label className={`mb-2 ${errors.direction ? 'text-red-500' : ''}`}>
+						{t('direction')}*
+					</label>
 					<Controller
 						name='direction'
 						control={control}
@@ -255,7 +235,7 @@ const CandidateAuth = () => {
 									field.onChange(lang)
 								}}
 							>
-								<SelectTrigger className='w-full'>
+								<SelectTrigger>
 									<SelectValue placeholder={t('direction')} />
 								</SelectTrigger>
 								<SelectContent>
@@ -271,7 +251,9 @@ const CandidateAuth = () => {
 				</div>
 
 				<div className='grid '>
-					<label className='mb-2'>{t('experience')}</label>
+					<label className={` ${errors.experience ? 'text-red-500' : ''}`}>
+						{t('experience')}*
+					</label>
 					<Controller
 						name='experience'
 						control={control}
@@ -282,11 +264,7 @@ const CandidateAuth = () => {
 									console.log(lang)
 								}}
 							>
-								<SelectTrigger
-									className={`border w-full ${
-										errors.experience ? 'border-red-500' : ''
-									}`}
-								>
+								<SelectTrigger>
 									<SelectValue placeholder={t('experience')} />
 								</SelectTrigger>
 								<SelectContent>
@@ -298,20 +276,6 @@ const CandidateAuth = () => {
 									<SelectItem value={'exp-3+'}>{t('exp-3+')}</SelectItem>
 								</SelectContent>
 							</Select>
-						)}
-					/>
-				</div>
-
-				<div className='grid '>
-					<label className='mb-2'>{t('resume')}:</label>
-					<Controller
-						name='resumeUrl'
-						control={control}
-						render={({}) => (
-							<Input
-								type='file'
-								onChange={(e: any) => setResumeFile(e?.target?.files[0])!}
-							/>
 						)}
 					/>
 				</div>
